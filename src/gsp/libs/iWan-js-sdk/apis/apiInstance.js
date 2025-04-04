@@ -1,6 +1,6 @@
-const utils = require('../libs/utils');
-const WsInstance = require('../libs/wsInstance');
-const auth = require('../authorization/auth.js');
+const utils = require("../libs/utils");
+const WsInstance = require("../libs/wsInstance");
+const auth = require("../authorization/auth.js");
 
 class ApiInstance extends WsInstance {
   constructor(apiKey, secretKey, option = {}) {
@@ -10,25 +10,24 @@ class ApiInstance extends WsInstance {
 
   _request(method, parameters, callback) {
     let message = {
-        jsonrpc: "2.0",
-        method: method,
-        params: parameters,
-        id: this.index
+      jsonrpc: "2.0",
+      method: method,
+      params: parameters,
+      id: this.index,
     };
     ++this.index;
 
     let jsonResult = auth.integrateJSON(message, this.secretKey);
     if (jsonResult.hasOwnProperty("error")) {
-        callback(jsonResult["error"]);
+      callback(jsonResult["error"]);
     } else {
-        if (this.open) {
+      if (this.open) {
         this._send(jsonResult["result"], callback);
       } else {
         this.events.once("open", () => {
           this._send(jsonResult["result"], callback);
         });
       }
-
     }
   }
 
@@ -48,7 +47,7 @@ class ApiInstance extends WsInstance {
 
   checkHash(hash) {
     // check if it has the basic requirements of a hash
-    return /^(0x)?[0-9a-fA-F]{64}$/i.test(hash)
+    return /^(0x)?[0-9a-fA-F]{64}$/i.test(hash);
   }
 
   /**
@@ -104,10 +103,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'monitorEvent';
+    let method = "monitorEvent";
     let params = { chainType: chainType, address: address, topics: topics };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -170,16 +169,16 @@ class ApiInstance extends WsInstance {
   *
   */
   getScEvent(chainType, address, topics, option, callback) {
-    let method = 'getScEvent';
+    let method = "getScEvent";
     let params = { chainType: chainType, address: address, topics: topics };
 
     if (option) {
-      if (typeof(option) === "function") {
+      if (typeof option === "function") {
         callback = option;
       } else {
         params.fromBlock = option.fromBlock ? option.fromBlock : 0;
-        params.toBlock = option.toBlock ? option.toBlock : 'latest';
-        params = {...option, ...params};
+        params.toBlock = option.toBlock ? option.toBlock : "latest";
+        params = { ...option, ...params };
       }
     }
 
@@ -187,7 +186,7 @@ class ApiInstance extends WsInstance {
       callback = utils.wrapCallback(callback);
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -198,51 +197,51 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getScOwner
-  * @apiGroup Contracts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getScOwner
-  * @apiVersion 1.2.1
-  * @apiDescription Get the owner of the specified contract from the specified chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} scAddr The token contract address for the specified token.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getScOwner","params":{"chainType":"WAN", "scAddr": "0x59adc38f0b3f64fb542b50e3e955e7a8c1eb3e3b"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getScOwner('WAN', '0x59adc38f0b3f64fb542b50e3e955e7a8c1eb3e3b', (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getScOwner('WAN', '0x59adc38f0b3f64fb542b50e3e955e7a8c1eb3e3b');
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "0xbb8703ca8226f411811dd16a3f1a2c1b3f71825d"
-  *
-  */
+   *
+   * @apiName getScOwner
+   * @apiGroup Contracts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getScOwner
+   * @apiVersion 1.2.1
+   * @apiDescription Get the owner of the specified contract from the specified chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} scAddr The token contract address for the specified token.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getScOwner","params":{"chainType":"WAN", "scAddr": "0x59adc38f0b3f64fb542b50e3e955e7a8c1eb3e3b"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getScOwner('WAN', '0x59adc38f0b3f64fb542b50e3e955e7a8c1eb3e3b', (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getScOwner('WAN', '0x59adc38f0b3f64fb542b50e3e955e7a8c1eb3e3b');
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "0xbb8703ca8226f411811dd16a3f1a2c1b3f71825d"
+   *
+   */
   getScOwner(chainType, scAddr, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getScOwner';
+    let method = "getScOwner";
     let params = { chainType: chainType, scAddr: scAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -253,50 +252,50 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getCoin2WanRatio
-  * @apiGroup CrossChain
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getCoin2WanRatio
-  * @apiVersion 1.2.1
-  * @apiDescription Coin exchange ratio,such as 1 ETH to 880 WANs in ICO period, the precision is 10000, the ratio is 880*precision = 880,0000. The ratio would be changed according to the market value ratio periodically.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} crossChain The cross-chain native coin name that you want to search, should be <code>"ETH"</code> or <code>"BTC"</code>.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getCoin2WanRatio","params":{"crossChain":"ETH"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getCoin2WanRatio('ETH', (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getCoin2WanRatio('ETH');
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "20"
-  *
-  */
+   *
+   * @apiName getCoin2WanRatio
+   * @apiGroup CrossChain
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getCoin2WanRatio
+   * @apiVersion 1.2.1
+   * @apiDescription Coin exchange ratio,such as 1 ETH to 880 WANs in ICO period, the precision is 10000, the ratio is 880*precision = 880,0000. The ratio would be changed according to the market value ratio periodically.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} crossChain The cross-chain native coin name that you want to search, should be <code>"ETH"</code> or <code>"BTC"</code>.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getCoin2WanRatio","params":{"crossChain":"ETH"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getCoin2WanRatio('ETH', (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getCoin2WanRatio('ETH');
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "20"
+   *
+   */
   getCoin2WanRatio(crossChain, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getCoin2WanRatio';
+    let method = "getCoin2WanRatio";
     let params = { crossChain: crossChain };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -362,10 +361,15 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getUTXO';
-    let params = { chainType: chainType, minconf: minconf, maxconf: maxconf, address: address };
+    let method = "getUTXO";
+    let params = {
+      chainType: chainType,
+      minconf: minconf,
+      maxconf: maxconf,
+      address: address,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -427,10 +431,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanGroups';
+    let method = "getStoremanGroups";
     let params = { crossChain: crossChain };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -494,10 +498,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenStoremanGroups';
+    let method = "getTokenStoremanGroups";
     let params = { crossChain: crossChain, tokenScAddr: tokenScAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -508,50 +512,50 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getGasPrice
-  * @apiGroup Status
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getGasPrice
-  * @apiVersion 1.2.1
-  * @apiDescription Get the current gas price in wei as bigNumber type.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getGasPrice","params":{"chainType":"WAN"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getGasPrice('WAN', (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getGasPrice('WAN');
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "180000000000"
-  *
-  */
+   *
+   * @apiName getGasPrice
+   * @apiGroup Status
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getGasPrice
+   * @apiVersion 1.2.1
+   * @apiDescription Get the current gas price in wei as bigNumber type.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getGasPrice","params":{"chainType":"WAN"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getGasPrice('WAN', (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getGasPrice('WAN');
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "180000000000"
+   *
+   */
   getGasPrice(chainType, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getGasPrice';
-    let params = { chainType: chainType};
+    let method = "getGasPrice";
+    let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -562,51 +566,51 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getBalance
-  * @apiGroup Accounts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getBalance
-  * @apiVersion 1.2.1
-  * @apiDescription Get balance for a single address.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} address The account being queried.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getBalance","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","chainType":"WAN"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getBalance('WAN', '0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c', (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getBalance('WAN', '0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c');
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "10000000000000000000000"
-  *
-  */
+   *
+   * @apiName getBalance
+   * @apiGroup Accounts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getBalance
+   * @apiVersion 1.2.1
+   * @apiDescription Get balance for a single address.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} address The account being queried.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getBalance","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","chainType":"WAN"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getBalance('WAN', '0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c', (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getBalance('WAN', '0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c');
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "10000000000000000000000"
+   *
+   */
   getBalance(chainType, address, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getBalance';
+    let method = "getBalance";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -617,54 +621,54 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getMultiBalances
-  * @apiGroup Accounts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getMultiBalances
-  * @apiVersion 1.2.1
-  * @apiDescription Get balance for multiple Addresses in a single call.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {array} addressArray An array of addresses being queried.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getMultiBalances","params":{"address": ["0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d"],"chainType":"WAN"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getMultiBalances('WAN', ["0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d"], (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getMultiBalances('WAN', ["0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d"]);
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   {
-  *    "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c": "10000000000000000000000",
-  *    "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d": "0"
-  *  }
-  *
-  */
+   *
+   * @apiName getMultiBalances
+   * @apiGroup Accounts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getMultiBalances
+   * @apiVersion 1.2.1
+   * @apiDescription Get balance for multiple Addresses in a single call.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {array} addressArray An array of addresses being queried.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getMultiBalances","params":{"address": ["0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d"],"chainType":"WAN"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getMultiBalances('WAN', ["0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d"], (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getMultiBalances('WAN', ["0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d"]);
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   {
+   *    "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c": "10000000000000000000000",
+   *    "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2d": "0"
+   *  }
+   *
+   */
   getMultiBalances(chainType, addrArray, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getMultiBalances';
+    let method = "getMultiBalances";
     let params = { chainType: chainType, address: addrArray };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -675,46 +679,46 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getTokenBalance
-  * @apiGroup Tokens
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenBalance
-  * @apiVersion 1.2.1
-  * @apiDescription Get token balance for a single address of a specified token on Wanchain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>, default: <code>'WAN'</code>.
-  * @apiParam {string} address The account being queried.
-  * @apiParam {string} tokenScAddr The token contract address for specified token. I.e., If chainType is <code>'WAN'</code>, it should be the token address for <code>"WETH"</code> or <code>"WBTC"</code>.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getTokenBalance","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getTokenBalance("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getTokenBalance("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "10000000000000000000000"
-  *
-  */
+   *
+   * @apiName getTokenBalance
+   * @apiGroup Tokens
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenBalance
+   * @apiVersion 1.2.1
+   * @apiDescription Get token balance for a single address of a specified token on Wanchain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>, default: <code>'WAN'</code>.
+   * @apiParam {string} address The account being queried.
+   * @apiParam {string} tokenScAddr The token contract address for specified token. I.e., If chainType is <code>'WAN'</code>, it should be the token address for <code>"WETH"</code> or <code>"WBTC"</code>.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getTokenBalance","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getTokenBalance("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getTokenBalance("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "10000000000000000000000"
+   *
+   */
   getTokenBalance(chainType, address, tokenScAddr, symbol, callback) {
-    if (symbol && typeof(symbol) === "function") {
+    if (symbol && typeof symbol === "function") {
       callback = symbol;
       symbol = undefined;
     }
@@ -722,13 +726,17 @@ class ApiInstance extends WsInstance {
       callback = utils.wrapCallback(callback);
     }
 
-    let method = 'getTokenBalance';
-    let params = { chainType: chainType, address: address, tokenScAddr: tokenScAddr };
+    let method = "getTokenBalance";
+    let params = {
+      chainType: chainType,
+      address: address,
+      tokenScAddr: tokenScAddr,
+    };
     if (symbol) {
       params.symbol = symbol;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -739,62 +747,66 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getMultiTokenBalance
-  * @apiGroup Tokens
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getMultiTokenBalance
-  * @apiVersion 1.2.1
-  * @apiDescription Gets token balance for multiple addresses of specified token on Wanchain in a single call.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>, default: <code>'WAN'</code>.
-  * @apiParam {array} addressArray An array of addresses being queried.
-  * @apiParam {string} tokenScAddr The token contract address for specified token. I.e., If chainType is <code>'WAN'</code>, it should be the token address for <code>"WETH"</code> or <code>"WBTC"</code>.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getMultiTokenBalance","params":{"address": ["0xfac95c16da814d24cc64b3186348afecf527324f","0xfac95c16da814d24cc64b3186348afecf527324e"],"tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getMultiTokenBalance("WAN", ["0xfac95c16da814d24cc64b3186348afecf527324f","0xfac95c16da814d24cc64b3186348afecf527324e"], "0x63eed4943abaac5f43f657d8eec098ca6d6a546e", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getMultiTokenBalance("WAN", ["0xfac95c16da814d24cc64b3186348afecf527324f","0xfac95c16da814d24cc64b3186348afecf527324e"], "0x63eed4943abaac5f43f657d8eec098ca6d6a546e");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   {
-  *    "0xfac95c16da814d24cc64b3186348afecf527324f": "10000000000000000000000",
-  *    "0xfac95c16da814d24cc64b3186348afecf527324e": "0"
-  *  }
-  *
-  */
+   *
+   * @apiName getMultiTokenBalance
+   * @apiGroup Tokens
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getMultiTokenBalance
+   * @apiVersion 1.2.1
+   * @apiDescription Gets token balance for multiple addresses of specified token on Wanchain in a single call.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>, default: <code>'WAN'</code>.
+   * @apiParam {array} addressArray An array of addresses being queried.
+   * @apiParam {string} tokenScAddr The token contract address for specified token. I.e., If chainType is <code>'WAN'</code>, it should be the token address for <code>"WETH"</code> or <code>"WBTC"</code>.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getMultiTokenBalance","params":{"address": ["0xfac95c16da814d24cc64b3186348afecf527324f","0xfac95c16da814d24cc64b3186348afecf527324e"],"tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getMultiTokenBalance("WAN", ["0xfac95c16da814d24cc64b3186348afecf527324f","0xfac95c16da814d24cc64b3186348afecf527324e"], "0x63eed4943abaac5f43f657d8eec098ca6d6a546e", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getMultiTokenBalance("WAN", ["0xfac95c16da814d24cc64b3186348afecf527324f","0xfac95c16da814d24cc64b3186348afecf527324e"], "0x63eed4943abaac5f43f657d8eec098ca6d6a546e");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   {
+   *    "0xfac95c16da814d24cc64b3186348afecf527324f": "10000000000000000000000",
+   *    "0xfac95c16da814d24cc64b3186348afecf527324e": "0"
+   *  }
+   *
+   */
   getMultiTokenBalance(chainType, addrArray, tokenScAddr, symbol, callback) {
-    if (symbol && typeof(symbol) === "function") {
+    if (symbol && typeof symbol === "function") {
       callback = symbol;
       symbol = undefined;
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getMultiTokenBalance';
-    let params = { chainType: chainType, address: addrArray, tokenScAddr: tokenScAddr };
+    let method = "getMultiTokenBalance";
+    let params = {
+      chainType: chainType,
+      address: addrArray,
+      tokenScAddr: tokenScAddr,
+    };
     if (symbol) {
       params.symbol = symbol;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -805,53 +817,53 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getTokenSupply
-  * @apiGroup Tokens
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenSupply
-  * @apiVersion 1.2.1
-  * @apiDescription Get total amount of certain token on Wanchain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>, default: <code>'WAN'</code>.
-  * @apiParam {string} tokenScAddr The token contract address for the specified token.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getTokenSupply","params":{"tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
-  * or
-  * {"jsonrpc":"2.0","method":"getTokenSupply","params":{"chainType":"WAN", "tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getTokenSupply("WAN", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getTokenSupply("WAN", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "30000000000000000000000"
-  *
-  */
+   *
+   * @apiName getTokenSupply
+   * @apiGroup Tokens
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenSupply
+   * @apiVersion 1.2.1
+   * @apiDescription Get total amount of certain token on Wanchain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>, default: <code>'WAN'</code>.
+   * @apiParam {string} tokenScAddr The token contract address for the specified token.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getTokenSupply","params":{"tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
+   * or
+   * {"jsonrpc":"2.0","method":"getTokenSupply","params":{"chainType":"WAN", "tokenScAddr" : "0x63eed4943abaac5f43f657d8eec098ca6d6a546e"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getTokenSupply("WAN", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getTokenSupply("WAN", "0x63eed4943abaac5f43f657d8eec098ca6d6a546e");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "30000000000000000000000"
+   *
+   */
   getTokenSupply(chainType, tokenScAddr, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenSupply';
+    let method = "getTokenSupply";
     let params = { chainType: chainType, tokenScAddr: tokenScAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -862,51 +874,51 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getNonce
-  * @apiGroup Accounts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getNonce
-  * @apiVersion 1.2.1
-  * @apiDescription Get the nonce of an account.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} address The account being queried.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getNonce","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","chainType":"WAN"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getNonce("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getNonce("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "0x0"
-  *
-  */
+   *
+   * @apiName getNonce
+   * @apiGroup Accounts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getNonce
+   * @apiVersion 1.2.1
+   * @apiDescription Get the nonce of an account.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} address The account being queried.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getNonce","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","chainType":"WAN"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getNonce("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getNonce("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "0x0"
+   *
+   */
   getNonce(chainType, address, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getNonce';
+    let method = "getNonce";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -917,51 +929,51 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getNonceIncludePending
-  * @apiGroup Accounts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getNonceIncludePending
-  * @apiVersion 1.2.1
-  * @apiDescription Get the pending nonce of an account.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} address The account being queried.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getNonceIncludePending","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","chainType":"WAN"}, "id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getNonceIncludePending("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getNonceIncludePending("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "0x0"
-  *
-  */
+   *
+   * @apiName getNonceIncludePending
+   * @apiGroup Accounts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getNonceIncludePending
+   * @apiVersion 1.2.1
+   * @apiDescription Get the pending nonce of an account.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} address The account being queried.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getNonceIncludePending","params":{"address": "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c","chainType":"WAN"}, "id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getNonceIncludePending("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getNonceIncludePending("WAN", "0x2cc79fa3b80c5b9b02051facd02478ea88a78e2c");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "0x0"
+   *
+   */
   getNonceIncludePending(chainType, address, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getNonceIncludePending';
+    let method = "getNonceIncludePending";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -972,50 +984,50 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getBlockNumber
-  * @apiGroup Blocks
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getBlockNumber
-  * @apiVersion 1.2.1
-  * @apiDescription Get the current latest block number.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code> or <code>"BTC"</code>.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getBlockNumber","params":{"chainType":"WAN"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getBlockNumber("WAN", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getBlockNumber("WAN");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "119858"
-  *
-  */
+   *
+   * @apiName getBlockNumber
+   * @apiGroup Blocks
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getBlockNumber
+   * @apiVersion 1.2.1
+   * @apiDescription Get the current latest block number.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code> or <code>"BTC"</code>.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getBlockNumber","params":{"chainType":"WAN"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getBlockNumber("WAN", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getBlockNumber("WAN");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "119858"
+   *
+   */
   getBlockNumber(chainType, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getBlockNumber';
+    let method = "getBlockNumber";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1023,71 +1035,71 @@ class ApiInstance extends WsInstance {
         return cb(null, result);
       });
     });
-    }
+  }
 
-    getLedgerVersion(chainType, callback) {
-        if (callback) {
-            callback = utils.wrapCallback(callback);
+  getLedgerVersion(chainType, callback) {
+    if (callback) {
+      callback = utils.wrapCallback(callback);
+    }
+    let method = "getLedgerVersion";
+    let params = { chainType: chainType };
+
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
         }
-        let method = 'getLedgerVersion';
-        let params = { chainType: chainType };
-
-        return utils.promiseOrCallback(callback, cb => {
-            this._request(method, params, (err, result) => {
-                if (err) {
-                    return cb(err);
-                }
-                return cb(null, result);
-            });
-        });
-    }
+        return cb(null, result);
+      });
+    });
+  }
 
   /**
-  *
-  * @apiName sendRawTransaction
-  * @apiGroup Transactions
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY sendRawTransaction
-  * @apiVersion 1.2.1
-  * @apiDescription Submit a pre-signed transaction for broadcast to certain chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code> or <code>"BTC"</code>.
-  * @apiParam {string} signedTx The signedTx you want to send.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"sendRawTransaction","params":{"chainType":"WAN", "signedTx":"0xf86e0109852e90edd000832dc6c0946ed9c11cbd8a6ae8355fa62ebca48493da572661880de0b6b3a7640000801ca0bd349ec9f51dd171eb5c59df9a6b8c5656eacb6793bed945a7ec69135f191abfa0359da11e8a4fdd51b52a8752ac32f9125d168441546d011406736bce67b8a356"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.sendRawTransaction('WAN', '0xf86e0109852e90edd000832dc6c0946ed9c11cbd8a6ae8355fa62ebca48493da572661880de0b6b3a7640000801ca0bd349ec9f51dd171eb5c59df9a6b8c5656eacb6793bed945a7ec69135f191abfa0359da11e8a4fdd51b52a8752ac32f9125d168441546d011406736bce67b8a356', (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.sendRawTransaction('WAN', '0xf86e0109852e90edd000832dc6c0946ed9c11cbd8a6ae8355fa62ebca48493da572661880de0b6b3a7640000801ca0bd349ec9f51dd171eb5c59df9a6b8c5656eacb6793bed945a7ec69135f191abfa0359da11e8a4fdd51b52a8752ac32f9125d168441546d011406736bce67b8a356');
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "0x4dcfc82728b5a9307f249ac095c8e6fcc436db4f85a094a0c5a457255c20f80f"
-  *
-  */
+   *
+   * @apiName sendRawTransaction
+   * @apiGroup Transactions
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY sendRawTransaction
+   * @apiVersion 1.2.1
+   * @apiDescription Submit a pre-signed transaction for broadcast to certain chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code> or <code>"BTC"</code>.
+   * @apiParam {string} signedTx The signedTx you want to send.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"sendRawTransaction","params":{"chainType":"WAN", "signedTx":"0xf86e0109852e90edd000832dc6c0946ed9c11cbd8a6ae8355fa62ebca48493da572661880de0b6b3a7640000801ca0bd349ec9f51dd171eb5c59df9a6b8c5656eacb6793bed945a7ec69135f191abfa0359da11e8a4fdd51b52a8752ac32f9125d168441546d011406736bce67b8a356"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.sendRawTransaction('WAN', '0xf86e0109852e90edd000832dc6c0946ed9c11cbd8a6ae8355fa62ebca48493da572661880de0b6b3a7640000801ca0bd349ec9f51dd171eb5c59df9a6b8c5656eacb6793bed945a7ec69135f191abfa0359da11e8a4fdd51b52a8752ac32f9125d168441546d011406736bce67b8a356', (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.sendRawTransaction('WAN', '0xf86e0109852e90edd000832dc6c0946ed9c11cbd8a6ae8355fa62ebca48493da572661880de0b6b3a7640000801ca0bd349ec9f51dd171eb5c59df9a6b8c5656eacb6793bed945a7ec69135f191abfa0359da11e8a4fdd51b52a8752ac32f9125d168441546d011406736bce67b8a356');
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "0x4dcfc82728b5a9307f249ac095c8e6fcc436db4f85a094a0c5a457255c20f80f"
+   *
+   */
   sendRawTransaction(chainType, signedTx, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'sendRawTransaction';
+    let method = "sendRawTransaction";
     let params = { chainType: chainType, signedTx: signedTx };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1158,13 +1170,13 @@ class ApiInstance extends WsInstance {
   *
   */
   getTxInfo(chainType, txHash, options, callback) {
-    let method = 'getTxInfo';
+    let method = "getTxInfo";
 
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
@@ -1173,7 +1185,7 @@ class ApiInstance extends WsInstance {
 
     let params = { chainType: chainType, txHash: txHash, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1246,10 +1258,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getBlockByNumber';
+    let method = "getBlockByNumber";
     let params = { chainType: chainType, blockNumber: blockNumber };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1322,10 +1334,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getBlockByHash';
+    let method = "getBlockByHash";
     let params = { chainType: chainType, blockHash: blockHash };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1336,60 +1348,60 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getBlockTransactionCount
-  * @apiGroup Blocks
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getBlockTransactionCount
-  * @apiVersion 1.2.1
-  * @apiDescription Get the number of transaction in a given block by block number or block hash on certain chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code>.
-  * @apiParam {string} blockHashOrBlockNumber The blockHash or the blockNumber you want to search.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getBlockTransactionCount","params":{"chainType":"WAN", "blockNumber":"670731"},"id":1}
-  * or
-  * {"jsonrpc":"2.0","method":"getBlockTransactionCount","params":{"chainType":"WAN", "blockHash":"0xeb3b437d765d4da9210481c2dd612fa9d0c51e0e83120ee7f573ed9d6296e9a8"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getBlockTransactionCount("WAN", "0xeb3b437d765d4da9210481c2dd612fa9d0c51e0e83120ee7f573ed9d6296e9a8", (err, result) => {
-  *   // apiTest.getBlockTransactionCount("WAN", "670731", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getBlockTransactionCount("WAN", "0xeb3b437d765d4da9210481c2dd612fa9d0c51e0e83120ee7f573ed9d6296e9a8");
-  *   // let result = await apiTest.getBlockTransactionCount("WAN", "670731");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   1
-  *
-  */
+   *
+   * @apiName getBlockTransactionCount
+   * @apiGroup Blocks
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getBlockTransactionCount
+   * @apiVersion 1.2.1
+   * @apiDescription Get the number of transaction in a given block by block number or block hash on certain chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code>.
+   * @apiParam {string} blockHashOrBlockNumber The blockHash or the blockNumber you want to search.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getBlockTransactionCount","params":{"chainType":"WAN", "blockNumber":"670731"},"id":1}
+   * or
+   * {"jsonrpc":"2.0","method":"getBlockTransactionCount","params":{"chainType":"WAN", "blockHash":"0xeb3b437d765d4da9210481c2dd612fa9d0c51e0e83120ee7f573ed9d6296e9a8"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getBlockTransactionCount("WAN", "0xeb3b437d765d4da9210481c2dd612fa9d0c51e0e83120ee7f573ed9d6296e9a8", (err, result) => {
+   *   // apiTest.getBlockTransactionCount("WAN", "670731", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getBlockTransactionCount("WAN", "0xeb3b437d765d4da9210481c2dd612fa9d0c51e0e83120ee7f573ed9d6296e9a8");
+   *   // let result = await apiTest.getBlockTransactionCount("WAN", "670731");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   1
+   *
+   */
   getBlockTransactionCount(chainType, blockHashOrBlockNumber, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getBlockTransactionCount';
+    let method = "getBlockTransactionCount";
     let params = {};
     if (this.checkHash(blockHashOrBlockNumber)) {
-        params = { chainType: chainType, blockHash: blockHashOrBlockNumber };
+      params = { chainType: chainType, blockHash: blockHashOrBlockNumber };
     } else {
-        params = { chainType: chainType, blockNumber: blockHashOrBlockNumber };
+      params = { chainType: chainType, blockNumber: blockHashOrBlockNumber };
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1464,20 +1476,25 @@ class ApiInstance extends WsInstance {
   *
   */
   getTransactionConfirm(chainType, waitBlocks, txHash, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTransactionConfirm';
-    let params = { chainType: chainType, waitBlocks: waitBlocks, txHash: txHash, ...options };
+    let method = "getTransactionConfirm";
+    let params = {
+      chainType: chainType,
+      waitBlocks: waitBlocks,
+      txHash: txHash,
+      ...options,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1539,20 +1556,20 @@ class ApiInstance extends WsInstance {
   *
   */
   getTransactionReceipt(chainType, txHash, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTransactionReceipt';
+    let method = "getTransactionReceipt";
     let params = { chainType: chainType, txHash: txHash, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1624,15 +1641,15 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTransByBlock';
+    let method = "getTransByBlock";
     let params = {};
     if (this.checkHash(blockHashOrBlockNumber)) {
-        params = { chainType: chainType, blockHash: blockHashOrBlockNumber };
+      params = { chainType: chainType, blockHash: blockHashOrBlockNumber };
     } else {
-        params = { chainType: chainType, blockNumber: blockHashOrBlockNumber };
+      params = { chainType: chainType, blockNumber: blockHashOrBlockNumber };
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1716,10 +1733,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTransByAddress';
+    let method = "getTransByAddress";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1791,21 +1808,34 @@ class ApiInstance extends WsInstance {
     }]
   *
   */
-  getTransByAddressBetweenBlocks(chainType, address, startBlockNo, endBlockNo, options, callback) {
-    if (typeof(options) === "function") {
+  getTransByAddressBetweenBlocks(
+    chainType,
+    address,
+    startBlockNo,
+    endBlockNo,
+    options,
+    callback
+  ) {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTransByAddressBetweenBlocks';
-    let params = { chainType: chainType, address: address, startBlockNo: startBlockNo, endBlockNo: endBlockNo, ...options };
+    let method = "getTransByAddressBetweenBlocks";
+    let params = {
+      chainType: chainType,
+      address: address,
+      startBlockNo: startBlockNo,
+      endBlockNo: endBlockNo,
+      ...options,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1816,71 +1846,71 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getTransCount
-  * @apiGroup Transactions
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getTransCount
-  * @apiVersion 1.2.1
-  * @apiDescription Get transaction count on certain chain.
-  * <br>Comments:
-  * <br>&nbsp;&nbsp;&nbsp;&nbsp;if no <code>startBlockNo</code> given, <code>startBlockNo</code> will be set to 0;
-  * <br>&nbsp;&nbsp;&nbsp;&nbsp;if no <code>endBlockNo</code> given, <code>endBlockNo</code> will be set to the newest blockNumber.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code>, if <code>"ETH"</code>, only return the count about ETH-Cross transaction.
-  * @apiParam {object} [options] Optional.
-  * <br>&nbsp;&nbsp;<code>address</code> - The account's address that you want to search.
-  * <br>&nbsp;&nbsp;<code>startBlockNo</code> - The start block number that you want to search from.
-  * <br>&nbsp;&nbsp;<code>endBlockNo</code> - The end block number that you want to search to.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getTransCount","params":{"chainType":"WAN", "address":"0x0b80f69fcb2564479058e4d28592e095828d24aa", "startBlockNo":3607100, "endBlockNo":3607130},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getTransCount("WAN", {"address":"0x0b80f69fcb2564479058e4d28592e095828d24aa", "startBlockNo":3607100, "endBlockNo":3607130}, (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getTransCount("WAN", {"address":"0x0b80f69fcb2564479058e4d28592e095828d24aa", "startBlockNo":3607100, "endBlockNo":3607130});
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   1
-  *
-  */
+   *
+   * @apiName getTransCount
+   * @apiGroup Transactions
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getTransCount
+   * @apiVersion 1.2.1
+   * @apiDescription Get transaction count on certain chain.
+   * <br>Comments:
+   * <br>&nbsp;&nbsp;&nbsp;&nbsp;if no <code>startBlockNo</code> given, <code>startBlockNo</code> will be set to 0;
+   * <br>&nbsp;&nbsp;&nbsp;&nbsp;if no <code>endBlockNo</code> given, <code>endBlockNo</code> will be set to the newest blockNumber.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain name that you want to search, should be <code>"WAN"</code> or <code>"ETH"</code>, if <code>"ETH"</code>, only return the count about ETH-Cross transaction.
+   * @apiParam {object} [options] Optional.
+   * <br>&nbsp;&nbsp;<code>address</code> - The account's address that you want to search.
+   * <br>&nbsp;&nbsp;<code>startBlockNo</code> - The start block number that you want to search from.
+   * <br>&nbsp;&nbsp;<code>endBlockNo</code> - The end block number that you want to search to.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getTransCount","params":{"chainType":"WAN", "address":"0x0b80f69fcb2564479058e4d28592e095828d24aa", "startBlockNo":3607100, "endBlockNo":3607130},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getTransCount("WAN", {"address":"0x0b80f69fcb2564479058e4d28592e095828d24aa", "startBlockNo":3607100, "endBlockNo":3607130}, (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getTransCount("WAN", {"address":"0x0b80f69fcb2564479058e4d28592e095828d24aa", "startBlockNo":3607100, "endBlockNo":3607130});
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   1
+   *
+   */
   getTransCount(chainType, option, callback) {
-    if (option && typeof(option) === "function") {
+    if (option && typeof option === "function") {
       callback = option;
       option = undefined;
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTransCount';
+    let method = "getTransCount";
     let params = { chainType: chainType };
 
-    if (option && typeof (option.address) !== "undefined") {
+    if (option && typeof option.address !== "undefined") {
       params["address"] = option.address;
     }
-    if (option && typeof (option.startBlockNo) !== "undefined") {
+    if (option && typeof option.startBlockNo !== "undefined") {
       params["startBlockNo"] = option.startBlockNo;
     }
-    if (option && typeof (option.endBlockNo) !== "undefined") {
+    if (option && typeof option.endBlockNo !== "undefined") {
       params["endBlockNo"] = option.endBlockNo;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1891,62 +1921,62 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getScVar
-  * @apiGroup Contracts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getScVar
-  * @apiVersion 1.2.1
-  * @apiDescription Get the specific public parameter value of one contract on certain chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} scAddr The token contract address for the specified token.
-  * @apiParam {string} name The name of the specific contract parameter.
-  * @apiParam {array} abi The abi of the specific contract.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getScVar","params":{"chainType": "WAN", "scAddr": "0x55ba61f4da3166487a804bccde7ee4015f609f45", "name": "addr", "abi": [/The Abi of the contracts/]},"id":1}
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getTransByAddress","params":{"chainType":"WAN", "address":"0xbb9003ca8226f411811dd16a3f1a2c1b3f71825d"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getScVar("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "addr", [/The Abi of the contracts/], (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getScVar("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "addr", [/The Abi of the contracts/]);
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "0x2ecb855170c941f239ffe3495f3e07cceabd8421"
-  *
-  */
+   *
+   * @apiName getScVar
+   * @apiGroup Contracts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getScVar
+   * @apiVersion 1.2.1
+   * @apiDescription Get the specific public parameter value of one contract on certain chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} scAddr The token contract address for the specified token.
+   * @apiParam {string} name The name of the specific contract parameter.
+   * @apiParam {array} abi The abi of the specific contract.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getScVar","params":{"chainType": "WAN", "scAddr": "0x55ba61f4da3166487a804bccde7ee4015f609f45", "name": "addr", "abi": [/The Abi of the contracts/]},"id":1}
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getTransByAddress","params":{"chainType":"WAN", "address":"0xbb9003ca8226f411811dd16a3f1a2c1b3f71825d"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getScVar("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "addr", [/The Abi of the contracts/], (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getScVar("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "addr", [/The Abi of the contracts/]);
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "0x2ecb855170c941f239ffe3495f3e07cceabd8421"
+   *
+   */
   getScVar(chainType, scAddr, name, abi, version, callback) {
-    if (typeof (version) === "function") {
+    if (typeof version === "function") {
       callback = version;
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getScVar';
+    let method = "getScVar";
     let params = { chainType: chainType, scAddr: scAddr, name: name, abi: abi };
-    if (typeof (version) === "function") {
-     params.version = version;
+    if (typeof version === "function") {
+      params.version = version;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -1957,60 +1987,66 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getScMap
-  * @apiGroup Contracts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getScMap
-  * @apiVersion 1.2.1
-  * @apiDescription Get the specific public map value of one contract on certain chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} scAddr The token contract address for the specified token.
-  * @apiParam {string} name The name of the specific contract public map.
-  * @apiParam {string} key The key of parameter of the specific contract public map.
-  * @apiParam {array} abi The abi of the specific contract.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getScMap","params":{"chainType": "WAN", "scAddr": "0x55ba61f4da3166487a804bccde7ee4015f609f45", "name": "mapAddr", "key": "", "abi": [/The Abi of the contracts/]},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getScMap("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "mapAddr", "key", [/The Abi of the contracts/], (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getScMap("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "mapAddr", "key", [/The Abi of the contracts/]);
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "0x2ecb855170c941f239ffe3495f3e07cceabd8421"
-  *
-  */
+   *
+   * @apiName getScMap
+   * @apiGroup Contracts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getScMap
+   * @apiVersion 1.2.1
+   * @apiDescription Get the specific public map value of one contract on certain chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} scAddr The token contract address for the specified token.
+   * @apiParam {string} name The name of the specific contract public map.
+   * @apiParam {string} key The key of parameter of the specific contract public map.
+   * @apiParam {array} abi The abi of the specific contract.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getScMap","params":{"chainType": "WAN", "scAddr": "0x55ba61f4da3166487a804bccde7ee4015f609f45", "name": "mapAddr", "key": "", "abi": [/The Abi of the contracts/]},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getScMap("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "mapAddr", "key", [/The Abi of the contracts/], (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getScMap("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "mapAddr", "key", [/The Abi of the contracts/]);
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "0x2ecb855170c941f239ffe3495f3e07cceabd8421"
+   *
+   */
   getScMap(chainType, scAddr, name, key, abi, version, callback) {
-    if (typeof (version) === "function") {
+    if (typeof version === "function") {
       callback = version;
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getScMap';
-    let params = { chainType: chainType, scAddr: scAddr, name: name, key: key, abi: abi };
-    if (typeof (version) === "function") {
+    let method = "getScMap";
+    let params = {
+      chainType: chainType,
+      scAddr: scAddr,
+      name: name,
+      key: key,
+      abi: abi,
+    };
+    if (typeof version === "function") {
       params.version = version;
-     }
+    }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2021,60 +2057,66 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName callScFunc
-  * @apiGroup Contracts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY callScFunc
-  * @apiVersion 1.2.1
-  * @apiDescription Call the specific public function of one contract on certain chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} scAddr The token contract address for the specified token.
-  * @apiParam {string} name The name of the specific contract public function.
-  * @apiParam {array} args The parameters array a of the specific contract public function.
-  * @apiParam {array} abi The abi of the specific contract.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"callScFunc","params":{"chainType": "WAN", "scAddr": "0x55ba61f4da3166487a804bccde7ee4015f609f45", "name": "getPriAddress", "args": [], "abi": [/The Abi of the contracts/]},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.callScFunc("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "getPriAddress", [], [/The Abi of the contracts/]), (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.callScFunc("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "getPriAddress", [], [/The Abi of the contracts/]);
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "0x8cc420e422b3fa1c416a14fc600b3354e3312524"
-  *
-  */  
+   *
+   * @apiName callScFunc
+   * @apiGroup Contracts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY callScFunc
+   * @apiVersion 1.2.1
+   * @apiDescription Call the specific public function of one contract on certain chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} scAddr The token contract address for the specified token.
+   * @apiParam {string} name The name of the specific contract public function.
+   * @apiParam {array} args The parameters array a of the specific contract public function.
+   * @apiParam {array} abi The abi of the specific contract.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"callScFunc","params":{"chainType": "WAN", "scAddr": "0x55ba61f4da3166487a804bccde7ee4015f609f45", "name": "getPriAddress", "args": [], "abi": [/The Abi of the contracts/]},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.callScFunc("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "getPriAddress", [], [/The Abi of the contracts/]), (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.callScFunc("WAN", "0x55ba61f4da3166487a804bccde7ee4015f609f45", "getPriAddress", [], [/The Abi of the contracts/]);
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "0x8cc420e422b3fa1c416a14fc600b3354e3312524"
+   *
+   */
   callScFunc(chainType, scAddr, name, args, abi, version, callback) {
-    if (typeof (version) === "function") {
+    if (typeof version === "function") {
       callback = version;
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'callScFunc';
-    let params = { chainType: chainType, scAddr: scAddr, name: name, args: args, abi: abi };
-    if (typeof (version) !== "function") {
+    let method = "callScFunc";
+    let params = {
+      chainType: chainType,
+      scAddr: scAddr,
+      name: name,
+      args: args,
+      abi: abi,
+    };
+    if (typeof version !== "function") {
       params.version = version;
-     }
+    }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2085,53 +2127,53 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getP2shxByHashx
-  * @apiGroup CrossChain
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getP2shxByHashx
-  * @apiVersion 1.2.1
-  * @apiDescription Get the x value of p2sh by hash(x) from BTC.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiIgnore Comment out this function
-  * @apiParam {string} chainType The chain name that you want to search, should be <code>"BTC"</code>.
-  * @apiParam {string} hashX The certain hashX that you want to search.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getP2shxByHashx","params":{"chainType":"BTC","hashx":"d2a5b1f403594dbc881e466d46a4cac3d6cf202476b1277876f0b24923d032da"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getP2shxByHashx("BTC", "d2a5b1f403594dbc881e466d46a4cac3d6cf202476b1277876f0b24923d032da", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getP2shxByHashx("BTC", "d2a5b1f403594dbc881e466d46a4cac3d6cf202476b1277876f0b24923d032da");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "2ecb855170c941f239ffe3495f3e07cceabd8421"
-  *
-  */
+   *
+   * @apiName getP2shxByHashx
+   * @apiGroup CrossChain
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getP2shxByHashx
+   * @apiVersion 1.2.1
+   * @apiDescription Get the x value of p2sh by hash(x) from BTC.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiIgnore Comment out this function
+   * @apiParam {string} chainType The chain name that you want to search, should be <code>"BTC"</code>.
+   * @apiParam {string} hashX The certain hashX that you want to search.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getP2shxByHashx","params":{"chainType":"BTC","hashx":"d2a5b1f403594dbc881e466d46a4cac3d6cf202476b1277876f0b24923d032da"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getP2shxByHashx("BTC", "d2a5b1f403594dbc881e466d46a4cac3d6cf202476b1277876f0b24923d032da", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getP2shxByHashx("BTC", "d2a5b1f403594dbc881e466d46a4cac3d6cf202476b1277876f0b24923d032da");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "2ecb855170c941f239ffe3495f3e07cceabd8421"
+   *
+   */
   //Get the x value of p2sh by hash(x) from BTC
   getP2shxByHashx(chainType, hashX, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getP2shxByHashx';
+    let method = "getP2shxByHashx";
     let params = { chainType: chainType, hashX: hashX };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2142,51 +2184,51 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName importAddress
-  * @apiGroup Accounts
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY importAddress
-  * @apiVersion 1.2.1
-  * @apiDescription Send a <code>'import address'</code> command to BTC.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain name that you want to search, should be <code>"BTC"</code>.
-  * @apiParam {string} address The BTC account address you want to import to the node to scan transactions.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"importAddress","params":{"chainType":"BTC","address":"mmmmmsdfasdjflaksdfasdf"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.importAddress("BTC", "mmmmmsdfasdjflaksdfasdf", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.importAddress("BTC", "mmmmmsdfasdjflaksdfasdf");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "success"
-  *
-  */
+   *
+   * @apiName importAddress
+   * @apiGroup Accounts
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY importAddress
+   * @apiVersion 1.2.1
+   * @apiDescription Send a <code>'import address'</code> command to BTC.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain name that you want to search, should be <code>"BTC"</code>.
+   * @apiParam {string} address The BTC account address you want to import to the node to scan transactions.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"importAddress","params":{"chainType":"BTC","address":"mmmmmsdfasdjflaksdfasdf"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.importAddress("BTC", "mmmmmsdfasdjflaksdfasdf", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.importAddress("BTC", "mmmmmsdfasdjflaksdfasdf");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "success"
+   *
+   */
   importAddress(chainType, address, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'importAddress';
+    let method = "importAddress";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2197,82 +2239,82 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getRegTokens
-  * @apiGroup CrossChain
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getRegTokens
-  * @apiVersion 1.2.1
-  * @apiDescription Get the information of tokens which are supported for cross-chain ability.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} crossChain The cross-chain name that you want to search, should be <code>"ETH"</code>.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getRegTokens","params":{"crossChain":"ETH"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getRegTokens("ETH", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getRegTokens("ETH");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *  [
-  *    {
-  *      "tokenOrigAddr": "0x54950025d1854808b09277fe082b54682b11a50b",
-  *      "tokenWanAddr": "0x67f3de547c7f3bc77095686a9e7fe49397e59cdf",
-  *      "ratio": "15000000",
-  *      "minDeposit": "10000000000000000000",
-  *      "origHtlc": "0x149f1650f0ff097bca88118b83ed58fb1cfc68ef",
-  *      "wanHtlc": "0x27feb1785f61504619a105faa00f57c49cc4d9c3",
-  *      "withdrawDelayTime": "259200",
-  *      "tokenHash": "0xe6bb4913c8cfb38d44a01360bb7874c58812e14b9154543bb67783e611e0475b",
-  *      "name": "Wanchain MKR Crosschain Token",
-  *      "symbol": "MKR",
-  *      "decimals": "18",
-  *      "iconData": "/9j/4AAQ...",
-  *      "iconType": "jpg"
-  *    },
-  *    {
-  *      "tokenOrigAddr": "0xdbf193627ee704d38495c2f5eb3afc3512eafa4c",
-  *      "tokenWanAddr": "0xda16e66820a3c64c34f2b35da3f5e1d1742274cb",
-  *      "ratio": "20000",
-  *      "minDeposit": "10000000000000000000",
-  *      "origHtlc": "0x149f1650f0ff097bca88118b83ed58fb1cfc68ef",
-  *      "wanHtlc": "0x27feb1785f61504619a105faa00f57c49cc4d9c3",
-  *      "withdrawDelayTime": "259200",
-  *      "tokenHash": "0x0cfee48dd8c8e32ad342c0f4ee723df9c2818d02734e28897ad0295bb458d4bc",
-  *      "name": "Wanchain SAI Crosschain Token",
-  *      "symbol": "SAI",
-  *      "decimals": "18",
-  *      "iconData": "/9j/4AAQ...",
-  *      "iconType": "jpg"
-  *    },
-  *   ... ...
-  *  ]
-  *
-  */
+   *
+   * @apiName getRegTokens
+   * @apiGroup CrossChain
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getRegTokens
+   * @apiVersion 1.2.1
+   * @apiDescription Get the information of tokens which are supported for cross-chain ability.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} crossChain The cross-chain name that you want to search, should be <code>"ETH"</code>.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getRegTokens","params":{"crossChain":"ETH"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getRegTokens("ETH", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getRegTokens("ETH");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *  [
+   *    {
+   *      "tokenOrigAddr": "0x54950025d1854808b09277fe082b54682b11a50b",
+   *      "tokenWanAddr": "0x67f3de547c7f3bc77095686a9e7fe49397e59cdf",
+   *      "ratio": "15000000",
+   *      "minDeposit": "10000000000000000000",
+   *      "origHtlc": "0x149f1650f0ff097bca88118b83ed58fb1cfc68ef",
+   *      "wanHtlc": "0x27feb1785f61504619a105faa00f57c49cc4d9c3",
+   *      "withdrawDelayTime": "259200",
+   *      "tokenHash": "0xe6bb4913c8cfb38d44a01360bb7874c58812e14b9154543bb67783e611e0475b",
+   *      "name": "Wanchain MKR Crosschain Token",
+   *      "symbol": "MKR",
+   *      "decimals": "18",
+   *      "iconData": "/9j/4AAQ...",
+   *      "iconType": "jpg"
+   *    },
+   *    {
+   *      "tokenOrigAddr": "0xdbf193627ee704d38495c2f5eb3afc3512eafa4c",
+   *      "tokenWanAddr": "0xda16e66820a3c64c34f2b35da3f5e1d1742274cb",
+   *      "ratio": "20000",
+   *      "minDeposit": "10000000000000000000",
+   *      "origHtlc": "0x149f1650f0ff097bca88118b83ed58fb1cfc68ef",
+   *      "wanHtlc": "0x27feb1785f61504619a105faa00f57c49cc4d9c3",
+   *      "withdrawDelayTime": "259200",
+   *      "tokenHash": "0x0cfee48dd8c8e32ad342c0f4ee723df9c2818d02734e28897ad0295bb458d4bc",
+   *      "name": "Wanchain SAI Crosschain Token",
+   *      "symbol": "SAI",
+   *      "decimals": "18",
+   *      "iconData": "/9j/4AAQ...",
+   *      "iconType": "jpg"
+   *    },
+   *   ... ...
+   *  ]
+   *
+   */
   getRegTokens(crossChain, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getRegTokens';
+    let method = "getRegTokens";
     let params = { crossChain: crossChain };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2283,53 +2325,58 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getTokenAllowance
-  * @apiGroup Tokens
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenAllowance
-  * @apiVersion 1.2.1
-  * @apiDescription Get the token allowance for one specific account on one contract for one specific spender account on a certain chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} tokenScAddr The token contract address for the specified token.
-  * @apiParam {string} ownerAddr The owner address on the specified contract.
-  * @apiParam {string} spenderAddr The spender address on the specified contract.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getTokenAllowance","params":{"chainType":"ETH", "tokenScAddr":"0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", "ownerAddr":"0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8", "spenderAddr":"0xcdc96fea7e2a6ce584df5dc22d9211e53a5b18b1"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getTokenAllowance("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", "0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8", "0xcdc96fea7e2a6ce584df5dc22d9211e53a5b18b1", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getTokenAllowance("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", "0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8", "0xcdc96fea7e2a6ce584df5dc22d9211e53a5b18b1");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "999999999999980000000000000"
-  *
-  */
+   *
+   * @apiName getTokenAllowance
+   * @apiGroup Tokens
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenAllowance
+   * @apiVersion 1.2.1
+   * @apiDescription Get the token allowance for one specific account on one contract for one specific spender account on a certain chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} tokenScAddr The token contract address for the specified token.
+   * @apiParam {string} ownerAddr The owner address on the specified contract.
+   * @apiParam {string} spenderAddr The spender address on the specified contract.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getTokenAllowance","params":{"chainType":"ETH", "tokenScAddr":"0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", "ownerAddr":"0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8", "spenderAddr":"0xcdc96fea7e2a6ce584df5dc22d9211e53a5b18b1"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getTokenAllowance("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", "0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8", "0xcdc96fea7e2a6ce584df5dc22d9211e53a5b18b1", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getTokenAllowance("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", "0xc27ecd85faa4ae80bf5e28daf91b605db7be1ba8", "0xcdc96fea7e2a6ce584df5dc22d9211e53a5b18b1");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "999999999999980000000000000"
+   *
+   */
   getTokenAllowance(chainType, tokenScAddr, ownerAddr, spenderAddr, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenAllowance';
-    let params = { chainType: chainType, tokenScAddr: tokenScAddr, ownerAddr: ownerAddr, spenderAddr: spenderAddr };
+    let method = "getTokenAllowance";
+    let params = {
+      chainType: chainType,
+      tokenScAddr: tokenScAddr,
+      ownerAddr: ownerAddr,
+      spenderAddr: spenderAddr,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2340,60 +2387,60 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getTokenInfo
-  * @apiGroup Tokens
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenInfo
-  * @apiVersion 1.2.1
-  * @apiDescription Get the info of token contract, like symbol and decimals, on certain chain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
-  * @apiParam {string} tokenScAddr The token contract address for the specified token.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getTokenInfo","params":{"chainType":"ETH", "tokenScAddr":"0xc5bc855056d99ef4bda0a4ae937065315e2ae11a"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getTokenInfo("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getTokenInfo("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   {
-  *    "symbol": "WCT",
-  *    "decimals": "18"
-  *  }
-  */
+   *
+   * @apiName getTokenInfo
+   * @apiGroup Tokens
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getTokenInfo
+   * @apiVersion 1.2.1
+   * @apiDescription Get the info of token contract, like symbol and decimals, on certain chain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'WAN'</code> and <code>'ETH'</code>.
+   * @apiParam {string} tokenScAddr The token contract address for the specified token.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getTokenInfo","params":{"chainType":"ETH", "tokenScAddr":"0xc5bc855056d99ef4bda0a4ae937065315e2ae11a"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getTokenInfo("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getTokenInfo("ETH", "0xc5bc855056d99ef4bda0a4ae937065315e2ae11a");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   {
+   *    "symbol": "WCT",
+   *    "decimals": "18"
+   *  }
+   */
   getTokenInfo(chainType, tokenScAddr, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenInfo';
+    let method = "getTokenInfo";
     let params = { chainType: chainType, tokenScAddr: tokenScAddr, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2451,20 +2498,24 @@ class ApiInstance extends WsInstance {
   *
   */
   getMultiTokenInfo(chainType, tokenScAddrArray, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
-      if (callback) {
+    if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getMultiTokenInfo';
-    let params = { chainType: chainType, tokenScAddrArray: tokenScAddrArray, ...options };
+    let method = "getMultiTokenInfo";
+    let params = {
+      chainType: chainType,
+      tokenScAddrArray: tokenScAddrArray,
+      ...options,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2475,51 +2526,51 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getToken2WanRatio
-  * @apiGroup CrossChain
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getToken2WanRatio
-  * @apiVersion 1.2.1
-  * @apiDescription Token exchange ratio,such as 1 token to 880 WANs, the precision is 10000, the ratio is 880*precision = 880,0000. The ratio would be changed accoring to the market value ratio periodically.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} crossChain The cross-chain name that you want to search, should be <code>"ETH"</code>.
-  * @apiParam {string} tokenScAddr The token contract address for the specified token.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getToken2WanRatio","params":{"crossChain":"ETH", "tokenScAddr":"0x00f58d6d585f84b2d7267940cede30ce2fe6eae8"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getToken2WanRatio("ETH", "0x00f58d6d585f84b2d7267940cede30ce2fe6eae8", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await apiTest.getToken2WanRatio("ETH", "0x00f58d6d585f84b2d7267940cede30ce2fe6eae8");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   "3000"
-  *
-  */
+   *
+   * @apiName getToken2WanRatio
+   * @apiGroup CrossChain
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getToken2WanRatio
+   * @apiVersion 1.2.1
+   * @apiDescription Token exchange ratio,such as 1 token to 880 WANs, the precision is 10000, the ratio is 880*precision = 880,0000. The ratio would be changed accoring to the market value ratio periodically.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} crossChain The cross-chain name that you want to search, should be <code>"ETH"</code>.
+   * @apiParam {string} tokenScAddr The token contract address for the specified token.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getToken2WanRatio","params":{"crossChain":"ETH", "tokenScAddr":"0x00f58d6d585f84b2d7267940cede30ce2fe6eae8"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getToken2WanRatio("ETH", "0x00f58d6d585f84b2d7267940cede30ce2fe6eae8", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await apiTest.getToken2WanRatio("ETH", "0x00f58d6d585f84b2d7267940cede30ce2fe6eae8");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   "3000"
+   *
+   */
   getToken2WanRatio(crossChain, tokenScAddr, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getToken2WanRatio';
+    let method = "getToken2WanRatio";
     let params = { crossChain: crossChain, tokenScAddr: tokenScAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2579,17 +2630,17 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getOTAMixSet';
-    let params = { otaAddress: address, number:number };
+    let method = "getOTAMixSet";
+    let params = { otaAddress: address, number: number };
     if (chainType) {
-      if (typeof(chainType) === "function") {
+      if (typeof chainType === "function") {
         callback = chainType;
       } else {
         params.chainType = chainType;
       }
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2645,11 +2696,11 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'estimateGas';
+    let method = "estimateGas";
 
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       Object.assign(params, txObject);
       this._request(method, params, (err, result) => {
         if (err) {
@@ -2661,67 +2712,67 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getChainInfo
-  * @apiGroup CrossChain
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getChainInfo
-  * @apiVersion 1.2.1
-  * @apiDescription Returns an object containing various details about the blockchain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getChainInfo","params":{"chainType":"EOS"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getChainInfo("EOS", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await getChainInfo("EOS");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *  {
-  *     server_version: 'aa60b9ca',
-  *     chain_id: 'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
-  *     head_block_num: 84031197,
-  *     last_irreversible_block_num: 84030870,
-  *     last_irreversible_block_id: '05023596ebe1b775a39a0ab380a0fd95bf435fbe9eccbf2b3e38c44a0cdc6a0d',
-  *     head_block_id: '050236dd683c4f98c9f5965910bf941d67b8fe6469a149114a3f0053779461da',
-  *     head_block_time: '2020-04-02T11:35:25.000',
-  *     head_block_producer: 'five.cartel',
-  *     virtual_block_cpu_limit: 500000000,
-  *     virtual_block_net_limit: 524288000,
-  *     block_cpu_limit: 499990,
-  *     block_net_limit: 524288,
-  *     server_version_string: 'v2.0.2',
-  *     fork_db_head_block_num: 84031197,
-  *     fork_db_head_block_id: '050236dd683c4f98c9f5965910bf941d67b8fe6469a149114a3f0053779461da',
-  *     server_full_version_string: 'v2.0.2-aa60b9caf9b7e2bd2411bb199c0c1d9fd8f085d5'
-  *  }
-  *
-  */
+   *
+   * @apiName getChainInfo
+   * @apiGroup CrossChain
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getChainInfo
+   * @apiVersion 1.2.1
+   * @apiDescription Returns an object containing various details about the blockchain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getChainInfo","params":{"chainType":"EOS"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getChainInfo("EOS", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await getChainInfo("EOS");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *  {
+   *     server_version: 'aa60b9ca',
+   *     chain_id: 'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
+   *     head_block_num: 84031197,
+   *     last_irreversible_block_num: 84030870,
+   *     last_irreversible_block_id: '05023596ebe1b775a39a0ab380a0fd95bf435fbe9eccbf2b3e38c44a0cdc6a0d',
+   *     head_block_id: '050236dd683c4f98c9f5965910bf941d67b8fe6469a149114a3f0053779461da',
+   *     head_block_time: '2020-04-02T11:35:25.000',
+   *     head_block_producer: 'five.cartel',
+   *     virtual_block_cpu_limit: 500000000,
+   *     virtual_block_net_limit: 524288000,
+   *     block_cpu_limit: 499990,
+   *     block_net_limit: 524288,
+   *     server_version_string: 'v2.0.2',
+   *     fork_db_head_block_num: 84031197,
+   *     fork_db_head_block_id: '050236dd683c4f98c9f5965910bf941d67b8fe6469a149114a3f0053779461da',
+   *     server_full_version_string: 'v2.0.2-aa60b9caf9b7e2bd2411bb199c0c1d9fd8f085d5'
+   *  }
+   *
+   */
   getChainInfo(chainType, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getChainInfo';
+    let method = "getChainInfo";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2732,56 +2783,60 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getStats
-  * @apiGroup EOS
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getStats
-  * @apiVersion 1.2.1
-  * @apiDescription Returns an object with one member labeled as the symbol you requested, the object has three members: supply (Symbol), max_supply (Symbol) and issuer (Name).
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
-  * @apiParam {string} tokenScAddr EOS contract code.
-  * @apiParam {string} symbol A string representation of an EOSIO symbol.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getCurrencyStats","params":{"chainType":"EOS","tokenScAddr":"eosio.token","symbol":"EOS"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getStats("EOS", "eosio.token", "EOS", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await getStats("EOS", "eosio.token", "EOS");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *  {
-  *      "supply": "10756688680.6257 EOS",
-  *      "max_supply": "100000000000.0000 EOS",
-  *      "issuer": "eosio"
-  *  }
-  *
-  */
+   *
+   * @apiName getStats
+   * @apiGroup EOS
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getStats
+   * @apiVersion 1.2.1
+   * @apiDescription Returns an object with one member labeled as the symbol you requested, the object has three members: supply (Symbol), max_supply (Symbol) and issuer (Name).
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
+   * @apiParam {string} tokenScAddr EOS contract code.
+   * @apiParam {string} symbol A string representation of an EOSIO symbol.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getCurrencyStats","params":{"chainType":"EOS","tokenScAddr":"eosio.token","symbol":"EOS"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getStats("EOS", "eosio.token", "EOS", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await getStats("EOS", "eosio.token", "EOS");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *  {
+   *      "supply": "10756688680.6257 EOS",
+   *      "max_supply": "100000000000.0000 EOS",
+   *      "issuer": "eosio"
+   *  }
+   *
+   */
   getStats(chainType, tokenScAddr, symbol, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getCurrencyStats';
-    let params = { chainType: chainType, tokenScAddr:tokenScAddr, symbol:symbol };
+    let method = "getCurrencyStats";
+    let params = {
+      chainType: chainType,
+      tokenScAddr: tokenScAddr,
+      symbol: symbol,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2792,97 +2847,97 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getAccountInfo
-  * @apiGroup EOS
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getAccountInfo
-  * @apiVersion 1.2.1
-  * @apiDescription Returns an object containing various details about a specific account on the blockchain.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
-  * @apiParam {string} address The account code.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getAccountInfo","params":{"chainType":"EOS","address":"aarontestnet"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getAccountInfo("EOS", "aarontestnet", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await getAccountInfo("EOS", "aarontestnet");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *  {
-  *     account_name: 'aarontestnet',
-  *     head_block_num: 84039011,
-  *     head_block_time: '2020-04-02T12:40:32.000',
-  *     privileged: false,
-  *     last_code_update: '1970-01-01T00:00:00.000',
-  *     created: '2019-04-22T03:47:11.500',
-  *     core_liquid_balance: '148.3494 EOS',
-  *     ram_quota: 7517,
-  *     net_weight: 340000,
-  *     cpu_weight: 2230000,
-  *     net_limit: { used: 520, available: 2188721, max: 2189241 },
-  *     cpu_limit: { used: 935, available: 13184853, max: 13185788 },
-  *     ram_usage: 3894,
-  *     permissions:
-  *     [ { perm_name: 'active', parent: 'owner', required_auth: [Object] },
-  *     { perm_name: 'owner', parent: '', required_auth: [Object] } ],
-  *     total_resources:
-  *     {
-  *       owner: 'aarontestnet',
-  *       net_weight: '34.0000 EOS',
-  *       cpu_weight: '223.0000 EOS',
-  *       ram_bytes: 6117
-  *     },
-  *     self_delegated_bandwidth:
-  *     {
-  *       from: 'aarontestnet',
-  *       to: 'aarontestnet',
-  *       net_weight: '24.0000 EOS',
-  *       cpu_weight: '73.0000 EOS'
-  *     },
-  *     refund_request: null,
-  *     voter_info:
-  *     {
-  *       owner: 'aarontestnet',
-  *       proxy: '',
-  *       producers: [],
-  *       staked: 2010000,
-  *       last_vote_weight: '0.00000000000000000',
-  *       proxied_vote_weight: '0.00000000000000000',
-  *       is_proxy: 0,
-  *       flags1: 0,
-  *       reserved2: 0,
-  *       reserved3: '0'
-  *     },
-  *     rex_info: null
-  *   }
-  *
-  */
+   *
+   * @apiName getAccountInfo
+   * @apiGroup EOS
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getAccountInfo
+   * @apiVersion 1.2.1
+   * @apiDescription Returns an object containing various details about a specific account on the blockchain.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
+   * @apiParam {string} address The account code.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getAccountInfo","params":{"chainType":"EOS","address":"aarontestnet"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getAccountInfo("EOS", "aarontestnet", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await getAccountInfo("EOS", "aarontestnet");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *  {
+   *     account_name: 'aarontestnet',
+   *     head_block_num: 84039011,
+   *     head_block_time: '2020-04-02T12:40:32.000',
+   *     privileged: false,
+   *     last_code_update: '1970-01-01T00:00:00.000',
+   *     created: '2019-04-22T03:47:11.500',
+   *     core_liquid_balance: '148.3494 EOS',
+   *     ram_quota: 7517,
+   *     net_weight: 340000,
+   *     cpu_weight: 2230000,
+   *     net_limit: { used: 520, available: 2188721, max: 2189241 },
+   *     cpu_limit: { used: 935, available: 13184853, max: 13185788 },
+   *     ram_usage: 3894,
+   *     permissions:
+   *     [ { perm_name: 'active', parent: 'owner', required_auth: [Object] },
+   *     { perm_name: 'owner', parent: '', required_auth: [Object] } ],
+   *     total_resources:
+   *     {
+   *       owner: 'aarontestnet',
+   *       net_weight: '34.0000 EOS',
+   *       cpu_weight: '223.0000 EOS',
+   *       ram_bytes: 6117
+   *     },
+   *     self_delegated_bandwidth:
+   *     {
+   *       from: 'aarontestnet',
+   *       to: 'aarontestnet',
+   *       net_weight: '24.0000 EOS',
+   *       cpu_weight: '73.0000 EOS'
+   *     },
+   *     refund_request: null,
+   *     voter_info:
+   *     {
+   *       owner: 'aarontestnet',
+   *       proxy: '',
+   *       producers: [],
+   *       staked: 2010000,
+   *       last_vote_weight: '0.00000000000000000',
+   *       proxied_vote_weight: '0.00000000000000000',
+   *       is_proxy: 0,
+   *       flags1: 0,
+   *       reserved2: 0,
+   *       reserved3: '0'
+   *     },
+   *     rex_info: null
+   *   }
+   *
+   */
   getAccountInfo(chainType, address, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getAccountInfo';
-    let params = { chainType: chainType, address:address };
+    let method = "getAccountInfo";
+    let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2893,55 +2948,55 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getAccounts
-  * @apiGroup EOS
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getAccounts
-  * @apiVersion 1.2.1
-  * @apiDescription Returns an array containing account names which is related to the public key, or owned by the given account.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
-  * @apiParam {string} addressOrPublicKey The account name or the public key.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getAccounts","params":{"chainType":"EOS","publicKey":"EOS6yEsFdisRXLpk4xg4AEnYJDW5bLrjwBDoHNREsDsxcwFEncErK"},"id":1}
-  * or
-  * {"jsonrpc":"2.0","method":"getAccounts","params":{"chainType":"EOS","address":"aarontestnet"},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getAccounts("EOS", "EOS6yEsFdisRXLpk4xg4AEnYJDW5bLrjwBDoHNREsDsxcwFEncErK", (err, result) => {
-  *   // apiTest.getAccounts("EOS", "aarontestnet", (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await getAccounts("EOS", "EOS6yEsFdisRXLpk4xg4AEnYJDW5bLrjwBDoHNREsDsxcwFEncErK");
-  *   // let result = await getAccounts("EOS", "aarontestnet");
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   [
-  *     "wanchainbbbb",
-  *     "wanchainaaaa"
-  *   ]
-  *
-  */
+   *
+   * @apiName getAccounts
+   * @apiGroup EOS
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getAccounts
+   * @apiVersion 1.2.1
+   * @apiDescription Returns an array containing account names which is related to the public key, or owned by the given account.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
+   * @apiParam {string} addressOrPublicKey The account name or the public key.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getAccounts","params":{"chainType":"EOS","publicKey":"EOS6yEsFdisRXLpk4xg4AEnYJDW5bLrjwBDoHNREsDsxcwFEncErK"},"id":1}
+   * or
+   * {"jsonrpc":"2.0","method":"getAccounts","params":{"chainType":"EOS","address":"aarontestnet"},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getAccounts("EOS", "EOS6yEsFdisRXLpk4xg4AEnYJDW5bLrjwBDoHNREsDsxcwFEncErK", (err, result) => {
+   *   // apiTest.getAccounts("EOS", "aarontestnet", (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await getAccounts("EOS", "EOS6yEsFdisRXLpk4xg4AEnYJDW5bLrjwBDoHNREsDsxcwFEncErK");
+   *   // let result = await getAccounts("EOS", "aarontestnet");
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   [
+   *     "wanchainbbbb",
+   *     "wanchainaaaa"
+   *   ]
+   *
+   */
   getAccounts(chainType, addressOrPublicKey, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getAccounts';
+    let method = "getAccounts";
 
     let params = { chainType: chainType };
     if (addressOrPublicKey.indexOf("EOS") === 0) {
@@ -2950,7 +3005,7 @@ class ApiInstance extends WsInstance {
       params.address = addressOrPublicKey;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -2961,62 +3016,62 @@ class ApiInstance extends WsInstance {
   }
 
   /**
-  *
-  * @apiName getRequiredKeys
-  * @apiGroup EOS
-  * @api {CONNECT} /ws/v3/YOUR-API-KEY getRequiredKeys
-  * @apiVersion 1.2.1
-  * @apiDescription Returns the required keys needed to sign a transaction.
-  * <br><br><strong>Returns:</strong>
-  * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
-  *
-  * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
-  * @apiParam {object} txArgs Optional, transaction arguments.
-  * <br>&nbsp;&nbsp;<code>expiration</code> - required string (DateTime) ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$ Time that transaction must be confirmed by.
-  * <br>&nbsp;&nbsp;<code>ref_block_num</code> - required integer.
-  * <br>&nbsp;&nbsp;<code>ref_block_prefix</code> - required integer.
-  * <br>&nbsp;&nbsp;<code>max_net_usage_words</code> - required string or integer (WholeNumber) A whole number.
-  * <br>&nbsp;&nbsp;<code>max_cpu_usage_ms</code> - required string or integer (WholeNumber) A whole number.
-  * <br>&nbsp;&nbsp;<code>delay_sec</code> - required integer.
-  * <br>&nbsp;&nbsp;<code>context_free_actions</code> - required Array of objects (Action).
-  * <br>&nbsp;&nbsp;<code>actions</code> - required Array of objects (Action).
-  * <br>&nbsp;&nbsp;<code>transaction_extensions</code> - Array of Array of integers or strings (Extension).
-  * <br>&nbsp;&nbsp;<code>available_keys</code> - Array of strings (PublicKey) Provide the available keys.
-  * @apiParam {function} [callback] Optional, the callback will receive two parameters:
-  * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
-  * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
-  *
-  * @apiParamExample {string} JSON-RPC over websocket
-  * {"jsonrpc":"2.0","method":"getRequiredKeys","params":{"chainType":"EOS","txArgs":{"transaction":{"expiration":"2020-04-03T06:06:41","ref_block_num":15105,"ref_block_prefix":2116318876,"max_net_usage_words":"","max_cpu_usage_ms":"","delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"cuiqiangtest","permission":"active"}],"data":"90D5CC58E549AF3180626ED39986A6E1010000000000000004454F530000000000"}],"transaction_extensions":[]},"available_keys":["EOS7MiJnddv2dHhjS82i9SQWMpjLoBbxP1mmpDmwn6ALGz4mpkddv"]},"id":1}
-  *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   apiTest.getRequiredKeys("EOS", {"transaction":{"expiration":"2020-04-03T06:06:41","ref_block_num":15105,"ref_block_prefix":2116318876,"max_net_usage_words":"","max_cpu_usage_ms":"","delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"cuiqiangtest","permission":"active"}],"data":"90D5CC58E549AF3180626ED39986A6E1010000000000000004454F530000000000"}],"transaction_extensions":[]},"available_keys":["EOS7MiJnddv2dHhjS82i9SQWMpjLoBbxP1mmpDmwn6ALGz4mpkddv"]}, (err, result) => {
-  *     console.log("Result is ", result);
-  *     apiTest.close();
-  *   });
-  *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
-  *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
-  *   let result = await getRequiredKeys("EOS", {"transaction":{"expiration":"2020-04-03T06:06:41","ref_block_num":15105,"ref_block_prefix":2116318876,"max_net_usage_words":"","max_cpu_usage_ms":"","delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"cuiqiangtest","permission":"active"}],"data":"90D5CC58E549AF3180626ED39986A6E1010000000000000004454F530000000000"}],"transaction_extensions":[]},"available_keys":["EOS7MiJnddv2dHhjS82i9SQWMpjLoBbxP1mmpDmwn6ALGz4mpkddv"]});
-  *   console.log("Result is ", result);
-  *   apiTest.close();
-  *
-  * @apiSuccessExample {json} Successful Response
-  *   ['PUB_K1_69X3383RzBZj41k73CSjUNXM5MYGpnDxyPnWUKPEtYQmVzqTY7']
-  *
-  */
+   *
+   * @apiName getRequiredKeys
+   * @apiGroup EOS
+   * @api {CONNECT} /ws/v3/YOUR-API-KEY getRequiredKeys
+   * @apiVersion 1.2.1
+   * @apiDescription Returns the required keys needed to sign a transaction.
+   * <br><br><strong>Returns:</strong>
+   * <br><font color=&#39;blue&#39;>«Promise,undefined»</font> Returns undefined if used with callback or a promise otherwise.
+   *
+   * @apiParam {string} chainType The chain being queried. Currently supports <code>'EOS'</code>.
+   * @apiParam {object} txArgs Optional, transaction arguments.
+   * <br>&nbsp;&nbsp;<code>expiration</code> - required string (DateTime) ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}$ Time that transaction must be confirmed by.
+   * <br>&nbsp;&nbsp;<code>ref_block_num</code> - required integer.
+   * <br>&nbsp;&nbsp;<code>ref_block_prefix</code> - required integer.
+   * <br>&nbsp;&nbsp;<code>max_net_usage_words</code> - required string or integer (WholeNumber) A whole number.
+   * <br>&nbsp;&nbsp;<code>max_cpu_usage_ms</code> - required string or integer (WholeNumber) A whole number.
+   * <br>&nbsp;&nbsp;<code>delay_sec</code> - required integer.
+   * <br>&nbsp;&nbsp;<code>context_free_actions</code> - required Array of objects (Action).
+   * <br>&nbsp;&nbsp;<code>actions</code> - required Array of objects (Action).
+   * <br>&nbsp;&nbsp;<code>transaction_extensions</code> - Array of Array of integers or strings (Extension).
+   * <br>&nbsp;&nbsp;<code>available_keys</code> - Array of strings (PublicKey) Provide the available keys.
+   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
+   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
+   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
+   *
+   * @apiParamExample {string} JSON-RPC over websocket
+   * {"jsonrpc":"2.0","method":"getRequiredKeys","params":{"chainType":"EOS","txArgs":{"transaction":{"expiration":"2020-04-03T06:06:41","ref_block_num":15105,"ref_block_prefix":2116318876,"max_net_usage_words":"","max_cpu_usage_ms":"","delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"cuiqiangtest","permission":"active"}],"data":"90D5CC58E549AF3180626ED39986A6E1010000000000000004454F530000000000"}],"transaction_extensions":[]},"available_keys":["EOS7MiJnddv2dHhjS82i9SQWMpjLoBbxP1mmpDmwn6ALGz4mpkddv"]},"id":1}
+   *
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   apiTest.getRequiredKeys("EOS", {"transaction":{"expiration":"2020-04-03T06:06:41","ref_block_num":15105,"ref_block_prefix":2116318876,"max_net_usage_words":"","max_cpu_usage_ms":"","delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"cuiqiangtest","permission":"active"}],"data":"90D5CC58E549AF3180626ED39986A6E1010000000000000004454F530000000000"}],"transaction_extensions":[]},"available_keys":["EOS7MiJnddv2dHhjS82i9SQWMpjLoBbxP1mmpDmwn6ALGz4mpkddv"]}, (err, result) => {
+   *     console.log("Result is ", result);
+   *     apiTest.close();
+   *   });
+   *
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
+   *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
+   *   let result = await getRequiredKeys("EOS", {"transaction":{"expiration":"2020-04-03T06:06:41","ref_block_num":15105,"ref_block_prefix":2116318876,"max_net_usage_words":"","max_cpu_usage_ms":"","delay_sec":0,"context_free_actions":[],"actions":[{"account":"eosio.token","name":"transfer","authorization":[{"actor":"cuiqiangtest","permission":"active"}],"data":"90D5CC58E549AF3180626ED39986A6E1010000000000000004454F530000000000"}],"transaction_extensions":[]},"available_keys":["EOS7MiJnddv2dHhjS82i9SQWMpjLoBbxP1mmpDmwn6ALGz4mpkddv"]});
+   *   console.log("Result is ", result);
+   *   apiTest.close();
+   *
+   * @apiSuccessExample {json} Successful Response
+   *   ['PUB_K1_69X3383RzBZj41k73CSjUNXM5MYGpnDxyPnWUKPEtYQmVzqTY7']
+   *
+   */
   getRequiredKeys(chainType, txArgs, callback) {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getRequiredKeys';
+    let method = "getRequiredKeys";
 
-    let params = { chainType: chainType, txArgs:txArgs };
+    let params = { chainType: chainType, txArgs: txArgs };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3072,11 +3127,11 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getRawCodeAndAbi';
+    let method = "getRawCodeAndAbi";
 
-    let params = { chainType: chainType, scAddr:scAddr };
+    let params = { chainType: chainType, scAddr: scAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3210,11 +3265,11 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getAbi';
+    let method = "getAbi";
 
-    let params = { chainType: chainType, scAddr:scAddr };
+    let params = { chainType: chainType, scAddr: scAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3274,11 +3329,11 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getRawAbi';
+    let method = "getRawAbi";
 
-    let params = { chainType: chainType, scAddr:scAddr };
+    let params = { chainType: chainType, scAddr: scAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3331,10 +3386,10 @@ class ApiInstance extends WsInstance {
   * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>after</code> - The string to filter after specified date (ISO8601).
   * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>before</code> - The string to filter before specified date (ISO8601).
   * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>transfer_to</code> - The string to transfer filter to.
-  * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>transfer_from</code> - The string to transfer filter from. 
+  * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>transfer_from</code> - The string to transfer filter from.
   * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>transfer_symbol</code> - The string to transfer filter symbol.
-  * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>act_name</code> - The string for act name. 
-  * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>act_account</code> - The string for act account. 
+  * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>act_name</code> - The string for act name.
+  * <br>&nbsp;&nbsp;&nbsp;&nbsp;<code>act_account</code> - The string for act account.
   * @apiParam {function} [callback] Optional, the callback will receive two parameters:
   * <br>&nbsp;&nbsp;<code>err</code> - If an error occurred.
   * <br>&nbsp;&nbsp;<code>result</code> - The saved result.
@@ -3383,26 +3438,26 @@ class ApiInstance extends WsInstance {
   */
   // getActions(chainType, address, indexPos, offset, callback) {
   getActions(chainType, address, options = {}, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
-    let method = 'getActions';
+    let method = "getActions";
 
-    let params = { chainType: chainType, address:address };
+    let params = { chainType: chainType, address: address };
 
     // for (let key in options) {
     //   params[key] = options[key];
     // }
 
     params.options = options;
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3485,10 +3540,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getResource';
+    let method = "getResource";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3545,10 +3600,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getResourcePrice';
-    let params = { chainType: chainType, address:address };
+    let method = "getResourcePrice";
+    let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3558,7 +3613,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-   /**
+  /**
   *
   * @apiName getBandwidthPrice
   * @apiGroup EOS
@@ -3604,10 +3659,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getBandwidthPrice';
-    let params = { chainType: chainType, address:address };
+    let method = "getBandwidthPrice";
+    let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3617,7 +3672,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
   *
   * @apiName getRamPrice
   * @apiGroup EOS
@@ -3659,10 +3714,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getRamPrice';
+    let method = "getRamPrice";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3672,7 +3727,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-   /**
+  /**
   *
   * @apiName getTotalSupply
   * @apiGroup EOS
@@ -3718,10 +3773,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTotalSupply';
+    let method = "getTotalSupply";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3773,10 +3828,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTotalStaked';
+    let method = "getTotalStaked";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3786,7 +3841,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-   /**
+  /**
   *
   * @apiName getTotalStakedPercent
   * @apiGroup EOS
@@ -3831,10 +3886,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTotalStakedPercent';
+    let method = "getTotalStakedPercent";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -3914,20 +3969,26 @@ class ApiInstance extends WsInstance {
   *
   */
   getTableRows(chainType, scAddr, scope, table, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTableRows';
-    let params = { chainType: chainType, scAddr: scAddr, scope: scope, table: table, ...options };
+    let method = "getTableRows";
+    let params = {
+      chainType: chainType,
+      scAddr: scAddr,
+      scope: scope,
+      table: table,
+      ...options,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4032,20 +4093,20 @@ class ApiInstance extends WsInstance {
   *
   */
   packTransaction(chainType, trans, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'packTransaction';
+    let method = "packTransaction";
     let params = { chainType: chainType, tx: trans, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4075,16 +4136,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getEpochID","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getEpochID("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getEpochID("WAN");
    *   console.log("Result is ", result);
@@ -4098,10 +4159,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getEpochID';
+    let method = "getEpochID";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4129,16 +4190,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getSlotID","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getSlotID("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getSlotID("WAN");
    *   console.log("Result is ", result);
@@ -4152,10 +4213,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getSlotID';
+    let method = "getSlotID";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4184,16 +4245,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getEpochLeadersByEpochID","params":{"chainType":"WAN", "epochID":18102},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getEpochLeadersByEpochID("WAN", 18102, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getEpochLeadersByEpochID("WAN", 18102);
    *   console.log("Result is ", result);
@@ -4215,10 +4276,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getEpochLeadersByEpochID';
-    let params = { chainType: chainType, epochID:epochID };
+    let method = "getEpochLeadersByEpochID";
+    let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4247,16 +4308,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getRandomProposersByEpochID","params":{"chainType":"WAN", "epochID":18102},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getRandomProposersByEpochID("WAN", 18102, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getRandomProposersByEpochID("WAN", 18102);
    *   console.log("Result is ", result);
@@ -4278,10 +4339,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getRandomProposersByEpochID';
-    let params = { chainType: chainType, epochID:epochID };
+    let method = "getRandomProposersByEpochID";
+    let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4310,16 +4371,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getStakerInfo","params":{"chainType":"WAN", "blockNumber":3496619},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getStakerInfo("WAN", 3496619, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getStakerInfo("WAN", 3496619);
    *   console.log("Result is ", result);
@@ -4359,10 +4420,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStakerInfo';
-    let params = { chainType: chainType, blockNumber:blockNumber };
+    let method = "getStakerInfo";
+    let params = { chainType: chainType, blockNumber: blockNumber };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4391,16 +4452,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getEpochIncentivePayDetail","params":{"chainType":"WAN", "epochID":18101},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getEpochIncentivePayDetail("WAN", 18101, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getEpochIncentivePayDetail("WAN", 18101);
    *   console.log("Result is ", result);
@@ -4445,10 +4506,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getEpochIncentivePayDetail';
-    let params = { chainType: chainType, epochID:epochID };
+    let method = "getEpochIncentivePayDetail";
+    let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4477,16 +4538,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getActivity","params":{"chainType":"WAN", "epochID":18102},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getActivity("WAN", 18102, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getActivity("WAN", 18102);
    *   console.log("Result is ", result);
@@ -4562,10 +4623,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getActivity';
-    let params = { chainType: chainType, epochID:epochID };
+    let method = "getActivity";
+    let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4594,16 +4655,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getSlotActivity","params":{"chainType":"WAN", "epochID":18102},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getSlotActivity("WAN", 18102, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getSlotActivity("WAN", 18102);
    *   console.log("Result is ", result);
@@ -4639,10 +4700,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getSlotActivity';
-    let params = { chainType: chainType, epochID:epochID };
+    let method = "getSlotActivity";
+    let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4671,16 +4732,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getValidatorActivity","params":{"chainType":"WAN", "epochID":18102},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getValidatorActivity("WAN", 18102, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getValidatorActivity("WAN", 18102);
    *   console.log("Result is ", result);
@@ -4752,10 +4813,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getValidatorActivity';
-    let params = { chainType: chainType, epochID:epochID };
+    let method = "getValidatorActivity";
+    let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4783,16 +4844,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getMaxStableBlkNumber","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getMaxStableBlkNumber("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getMaxStableBlkNumber("WAN");
    *   console.log("Result is ", result);
@@ -4806,10 +4867,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getMaxStableBlkNumber';
+    let method = "getMaxStableBlkNumber";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4839,16 +4900,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getRandom","params":{"chainType":"WAN", "epochID":18102, "blockNumber":-1},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getRandom("WAN", 18102, -1, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getRandom("WAN", 18102, -1);
    *   console.log("Result is ", result);
@@ -4862,10 +4923,14 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getRandom';
-    let params = { chainType: chainType, epochID:epochID, blockNumber:blockNumber };
+    let method = "getRandom";
+    let params = {
+      chainType: chainType,
+      epochID: epochID,
+      blockNumber: blockNumber,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4894,16 +4959,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getValidatorInfo","params":{"chainType":"WAN", "address":"0xda8fa1aee77709d37f59fb96afd4cf10ccaeb6ce"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getValidatorInfo("WAN", "0xda8fa1aee77709d37f59fb96afd4cf10ccaeb6ce", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getValidatorInfo("WAN", "0xda8fa1aee77709d37f59fb96afd4cf10ccaeb6ce");
    *   console.log("Result is ", result);
@@ -4921,10 +4986,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getValidatorInfo';
+    let method = "getValidatorInfo";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -4953,16 +5018,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getValidatorStakeInfo","params":{"chainType":"WAN", "address":"0x086b4cfadfd9f232b068c2e8263d608baee85163"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getValidatorStakeInfo("WAN", "0x086b4cfadfd9f232b068c2e8263d608baee85163", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getValidatorStakeInfo("WAN", "0x086b4cfadfd9f232b068c2e8263d608baee85163");
    *   console.log("Result is ", result);
@@ -5020,10 +5085,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getValidatorStakeInfo';
+    let method = "getValidatorStakeInfo";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5055,16 +5120,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getValidatorTotalIncentive","params":{"chainType":"WAN", "address":"0xda8fa1aee77709d37f59fb96afd4cf10ccaeb6ce"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getValidatorTotalIncentive("WAN", "0xda8fa1aee77709d37f59fb96afd4cf10ccaeb6ce", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getValidatorTotalIncentive("WAN", "0xda8fa1aee77709d37f59fb96afd4cf10ccaeb6ce");
    *   console.log("Result is ", result);
@@ -5082,24 +5147,24 @@ class ApiInstance extends WsInstance {
    *
    */
   getValidatorTotalIncentive(chainType, address, options, callback) {
-    if (options && typeof(options) === "function") {
+    if (options && typeof options === "function") {
       callback = options;
       options = undefined;
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getValidatorTotalIncentive';
+    let method = "getValidatorTotalIncentive";
     let params = { chainType: chainType, address: address };
     if (options) {
-      typeof(options.from) !== "undefined" && (params.from = options.from);
-      typeof(options.to) !== "undefined" && (params.to = options.to);
+      typeof options.from !== "undefined" && (params.from = options.from);
+      typeof options.to !== "undefined" && (params.to = options.to);
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5128,16 +5193,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getDelegatorStakeInfo","params":{"chainType":"WAN", "address":"0xa6de4408d9003ee992b5dc0e1bf27968e48727dc"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getDelegatorStakeInfo("WAN", "0xa6de4408d9003ee992b5dc0e1bf27968e48727dc", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getDelegatorStakeInfo("WAN", "0xa6de4408d9003ee992b5dc0e1bf27968e48727dc");
    *   console.log("Result is ", result);
@@ -5172,10 +5237,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getDelegatorStakeInfo';
+    let method = "getDelegatorStakeInfo";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5207,16 +5272,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getDelegatorIncentive","params":{"chainType":"WAN", "address":"0xa6de4408d9003ee992b5dc0e1bf27968e48727dc"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getDelegatorIncentive("WAN", "0xa6de4408d9003ee992b5dc0e1bf27968e48727dc", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getDelegatorIncentive("WAN", "0xa6de4408d9003ee992b5dc0e1bf27968e48727dc");
    *   console.log("Result is ", result);
@@ -5259,27 +5324,27 @@ class ApiInstance extends WsInstance {
    *
    */
   getDelegatorIncentive(chainType, address, options, callback) {
-    if (options && typeof(options) === "function") {
+    if (options && typeof options === "function") {
       callback = options;
       options = undefined;
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getDelegatorIncentive';
+    let method = "getDelegatorIncentive";
     let params = { chainType: chainType, address: address };
     if (options) {
       if (options.validatorAddress) {
         params.validatorAddress = options.validatorAddress;
       }
-      typeof(options.from) !== "undefined" && (params.from = options.from);
-      typeof(options.to) !== "undefined" && (params.to = options.to);
+      typeof options.from !== "undefined" && (params.from = options.from);
+      typeof options.to !== "undefined" && (params.to = options.to);
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5312,16 +5377,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getDelegatorTotalIncentive","params":{"chainType":"WAN", "address":"0xa6de4408d9003ee992b5dc0e1bf27968e48727dc"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getDelegatorTotalIncentive("WAN", "0xa6de4408d9003ee992b5dc0e1bf27968e48727dc", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getDelegatorTotalIncentive("WAN", "0xa6de4408d9003ee992b5dc0e1bf27968e48727dc");
    *   console.log("Result is ", result);
@@ -5364,27 +5429,27 @@ class ApiInstance extends WsInstance {
    *
    */
   getDelegatorTotalIncentive(chainType, address, options, callback) {
-    if (options && typeof(options) === "function") {
+    if (options && typeof options === "function") {
       callback = options;
       options = undefined;
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getDelegatorTotalIncentive';
+    let method = "getDelegatorTotalIncentive";
     let params = { chainType: chainType, address: address };
     if (options) {
       if (options.validatorAddress) {
         params.validatorAddress = options.validatorAddress;
       }
-      typeof(options.from) !== "undefined" && (params.from = options.from);
-      typeof(options.to) !== "undefined" && (params.to = options.to);
+      typeof options.from !== "undefined" && (params.from = options.from);
+      typeof options.to !== "undefined" && (params.to = options.to);
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5413,16 +5478,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getLeaderGroupByEpochID","params":{"chainType":"WAN", "epochID":18102},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getLeaderGroupByEpochID("WAN", 18102, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getLeaderGroupByEpochID("WAN", 18102);
    *   console.log("Result is ", result);
@@ -5462,10 +5527,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getLeaderGroupByEpochID';
+    let method = "getLeaderGroupByEpochID";
     let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5493,16 +5558,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getCurrentEpochInfo","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getCurrentEpochInfo("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getCurrentEpochInfo("WAN");
    *   console.log("Result is ", result);
@@ -5520,10 +5585,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getCurrentEpochInfo';
+    let method = "getCurrentEpochInfo";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5551,16 +5616,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getCurrentStakerInfo","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getCurrentStakerInfo("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getCurrentStakerInfo("WAN");
    *   console.log("Result is ", result);
@@ -5600,10 +5665,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getCurrentStakerInfo';
+    let method = "getCurrentStakerInfo";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5631,16 +5696,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getSlotCount","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getSlotCount("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getSlotCount("WAN");
    *   console.log("Result is ", result);
@@ -5654,10 +5719,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getSlotCount';
+    let method = "getSlotCount";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5685,16 +5750,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getSlotTime","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getSlotTime("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getSlotTime("WAN");
    *   console.log("Result is ", result);
@@ -5708,10 +5773,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getSlotTime';
+    let method = "getSlotTime";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5740,16 +5805,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getTimeByEpochID","params":{"chainType":"WAN", "epochID":18108},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getTimeByEpochID("WAN", 18108, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getTimeByEpochID("WAN", 18108);
    *   console.log("Result is ", result);
@@ -5763,10 +5828,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTimeByEpochID';
+    let method = "getTimeByEpochID";
     let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5803,8 +5868,8 @@ class ApiInstance extends WsInstance {
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getEpochIDByTime("WAN", 1564550000);
    *   console.log("Result is ", result);
@@ -5818,10 +5883,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getEpochIDByTime';
+    let method = "getEpochIDByTime";
     let params = { chainType: chainType, time: time };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5880,31 +5945,33 @@ class ApiInstance extends WsInstance {
    *
    */
   getRegisteredValidator(address, after, callback) {
-    let method = 'getRegisteredValidator';
+    let method = "getRegisteredValidator";
     let params = {};
 
-    if (typeof (address) === "function") {
+    if (typeof address === "function") {
       callback = address;
       address = undefined;
       after = undefined;
     }
-    if (typeof (after) === "function") {
+    if (typeof after === "function") {
       callback = after;
       after = undefined;
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    if (typeof(address) !== "undefined" && typeof(after) !== "undefined") {
+    if (typeof address !== "undefined" && typeof after !== "undefined") {
       params.address = address;
       params.after = after;
-    } else if (typeof(address) !== "undefined") {
-      (typeof(address) === "string" || Array.isArray(address)) ? (params.address = address) : (params.after = address);
-    } else if (typeof(after) !== "undefined") {
+    } else if (typeof address !== "undefined") {
+      typeof address === "string" || Array.isArray(address)
+        ? (params.address = address)
+        : (params.after = address);
+    } else if (typeof after !== "undefined") {
       params.after = after;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -5968,31 +6035,36 @@ class ApiInstance extends WsInstance {
    *
    */
   getRegisteredToken(tokenOrigAccount, after, callback) {
-    let method = 'getRegisteredToken';
+    let method = "getRegisteredToken";
     let params = {};
 
-    if (typeof (tokenOrigAccount) === "function") {
+    if (typeof tokenOrigAccount === "function") {
       callback = tokenOrigAccount;
       tokenOrigAccount = undefined;
       after = undefined;
     }
-    if (typeof (after) === "function") {
+    if (typeof after === "function") {
       callback = after;
       after = undefined;
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    if (typeof(tokenOrigAccount) !== "undefined" && typeof(after) !== "undefined") {
+    if (
+      typeof tokenOrigAccount !== "undefined" &&
+      typeof after !== "undefined"
+    ) {
       params.tokenOrigAccount = tokenOrigAccount;
       params.after = after;
-    } else if (typeof(tokenOrigAccount) !== "undefined") {
-      (typeof(tokenOrigAccount) === "string" || Array.isArray(tokenOrigAccount)) ? (params.tokenOrigAccount = tokenOrigAccount) : (params.after = tokenOrigAccount);
-    } else if (typeof(after) !== "undefined") {
+    } else if (typeof tokenOrigAccount !== "undefined") {
+      typeof tokenOrigAccount === "string" || Array.isArray(tokenOrigAccount)
+        ? (params.tokenOrigAccount = tokenOrigAccount)
+        : (params.after = tokenOrigAccount);
+    } else if (typeof after !== "undefined") {
       params.after = after;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6078,14 +6150,14 @@ class ApiInstance extends WsInstance {
    *
    */
   getRegisteredDapp(options, callback) {
-    let method = 'getRegisteredDapp';
+    let method = "getRegisteredDapp";
     let params = {};
 
-    if (typeof (options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
@@ -6093,7 +6165,7 @@ class ApiInstance extends WsInstance {
     }
     params = utils.newJson(options);
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6152,14 +6224,14 @@ class ApiInstance extends WsInstance {
    *
    */
   getRegisteredAds(options, callback) {
-    let method = 'getRegisteredAds';
+    let method = "getRegisteredAds";
     let params = {};
 
-    if (typeof (options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
@@ -6167,7 +6239,7 @@ class ApiInstance extends WsInstance {
     }
     params = utils.newJson(options);
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6195,16 +6267,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getPosInfo","params":{"chainType":"WAN"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getPosInfo("WAN", (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getPosInfo("WAN");
    *   console.log("Result is ", result);
@@ -6221,10 +6293,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getPosInfo';
+    let method = "getPosInfo";
     let params = { chainType: chainType };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6253,16 +6325,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getMaxBlockNumber","params":{"chainType":"WAN", "epochID":[18102, 18101]},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getMaxBlockNumber("WAN", [18102, 18101], (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getMaxBlockNumber("WAN", [18102, 18101]);
    *   console.log("Result is ", result);
@@ -6285,10 +6357,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getMaxBlockNumber';
+    let method = "getMaxBlockNumber";
     let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6317,16 +6389,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getValidatorSupStakeInfo","params":{"chainType":"WAN", "address":["0x158bae682e6278a16d09d7c7311074585d38b54d","0x85dae7e5c7b433a1682c54eee63adf63d835d272"]},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getValidatorSupStakeInfo("WAN", ["0x158bae682e6278a16d09d7c7311074585d38b54d","0x85dae7e5c7b433a1682c54eee63adf63d835d272"], (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getValidatorSupStakeInfo("WAN", ["0x158bae682e6278a16d09d7c7311074585d38b54d","0x85dae7e5c7b433a1682c54eee63adf63d835d272"]);
    *   console.log("Result is ", result);
@@ -6351,10 +6423,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getValidatorSupStakeInfo';
+    let method = "getValidatorSupStakeInfo";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6383,16 +6455,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getDelegatorSupStakeInfo","params":{"chainType":"WAN", "address":["0xc45089dfcf6308d80b377b0a6ffc8bd314273ce0"]},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getDelegatorSupStakeInfo("WAN", ["0xc45089dfcf6308d80b377b0a6ffc8bd314273ce0"], (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getDelegatorSupStakeInfo("WAN", ["0xc45089dfcf6308d80b377b0a6ffc8bd314273ce0"]);
    *   console.log("Result is ", result);
@@ -6420,10 +6492,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getDelegatorSupStakeInfo';
+    let method = "getDelegatorSupStakeInfo";
     let params = { chainType: chainType, address: address };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6452,16 +6524,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getEpochIncentiveBlockNumber","params":{"chainType":"WAN", "epochID":18106},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getEpochIncentiveBlockNumber("WAN", 18106, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getEpochIncentiveBlockNumber("WAN", 18106);
    *   console.log("Result is ", result);
@@ -6475,10 +6547,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getEpochIncentiveBlockNumber';
+    let method = "getEpochIncentiveBlockNumber";
     let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6507,16 +6579,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getEpochStakeOut","params":{"chainType":"WAN", "epochID":18106},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getEpochStakeOut("WAN", 18106, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getEpochStakeOut("WAN", 18106);
    *   console.log("Result is ", result);
@@ -6536,10 +6608,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getEpochStakeOut';
+    let method = "getEpochStakeOut";
     let params = { chainType: chainType, epochID: epochID };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6591,10 +6663,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'checkOTAUsed';
+    let method = "checkOTAUsed";
     let params = { chainType: chainType, image: image };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6609,10 +6681,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'addDoc';
+    let method = "addDoc";
     let params = { table: tableName, content: content };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6623,21 +6695,21 @@ class ApiInstance extends WsInstance {
   }
 
   getDocOne(tableName, filter, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
 
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getDocOne';
+    let method = "getDocOne";
     let params = { table: tableName, filter: filter, options: options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6648,21 +6720,21 @@ class ApiInstance extends WsInstance {
   }
 
   getDocMany(tableName, filter, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
 
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getDocMany';
+    let method = "getDocMany";
     let params = { table: tableName, filter: filter, options: options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6673,21 +6745,26 @@ class ApiInstance extends WsInstance {
   }
 
   updateDocOne(tableName, filter, content, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
 
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'updateDocOne';
-    let params = { table: tableName, filter: filter, content: content, options: options };
+    let method = "updateDocOne";
+    let params = {
+      table: tableName,
+      filter: filter,
+      content: content,
+      options: options,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6698,21 +6775,26 @@ class ApiInstance extends WsInstance {
   }
 
   updateDocMany(tableName, filter, content, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
 
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'updateDocMany';
-    let params = { table: tableName, filter: filter, content: content, options: options };
+    let method = "updateDocMany";
+    let params = {
+      table: tableName,
+      filter: filter,
+      content: content,
+      options: options,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6726,10 +6808,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'deleteDoc';
+    let method = "deleteDoc";
     let params = { table: tableName, filter: filter };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6740,20 +6822,20 @@ class ApiInstance extends WsInstance {
   }
 
   aggregateDoc(tableName, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'aggregateDoc';
+    let method = "aggregateDoc";
     let params = { table: tableName, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6767,10 +6849,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'countDoc';
+    let method = "countDoc";
     let params = { table: tableName, filter: filter };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6824,21 +6906,26 @@ class ApiInstance extends WsInstance {
    *
    */
   fetchService(srvType, funcName, type, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
 
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'fetchService';
-    let params = { srvType: srvType, funcName: funcName, type: type, options: options };
+    let method = "fetchService";
+    let params = {
+      srvType: srvType,
+      funcName: funcName,
+      type: type,
+      options: options,
+    };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6891,21 +6978,21 @@ class ApiInstance extends WsInstance {
    *
    */
   fetchSpecialService(url, type, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
 
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'fetchSpecialService';
+    let method = "fetchSpecialService";
     let params = { url: url, type: type, options: options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6916,22 +7003,22 @@ class ApiInstance extends WsInstance {
   }
 
   getRegisteredTokenLogo(chainType, options, callback) {
-    let method = 'getRegisteredTokenLogo';
+    let method = "getRegisteredTokenLogo";
     let params = {};
 
-    if (typeof (chainType) === "function") {
+    if (typeof chainType === "function") {
       options = {};
       chainType = undefined;
     }
-    if (typeof (options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (chainType && typeof (chainType) === "object") {
+    if (chainType && typeof chainType === "object") {
       options = chainType;
       chainType = undefined;
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
@@ -6943,7 +7030,7 @@ class ApiInstance extends WsInstance {
       params.chainType = chainType;
     }
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -6955,7 +7042,7 @@ class ApiInstance extends WsInstance {
 
   // ################### open storeman api ###################
 
-    /**
+  /**
    *
    * @apiName getStoremanGroupList
    * @apiGroup CrossChain
@@ -7024,20 +7111,20 @@ class ApiInstance extends WsInstance {
    *
    */
   getStoremanGroupList(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanGroupList';
-    let params = {...options};
+    let method = "getStoremanGroupList";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7047,7 +7134,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanGroupActivity
    * @apiGroup CrossChain
@@ -7094,20 +7181,20 @@ class ApiInstance extends WsInstance {
    *
    */
   getStoremanGroupActivity(groupId, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanGroupActivity';
-    let params = {groupId: groupId, ...options};
+    let method = "getStoremanGroupActivity";
+    let params = { groupId: groupId, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7117,7 +7204,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanGroupQuota
    * @apiGroup CrossChain
@@ -7170,21 +7257,21 @@ class ApiInstance extends WsInstance {
       ]
    *
    */
-    getStoremanGroupQuota(chainType, groupId, symbol, targetChainType, callback) {
-        if (callback) {
-            callback = utils.wrapCallback(callback);
-        }
-        let method = 'getStoremanGroupQuota';
-        let params = { chainType, groupId, symbol, targetChainType };
-        return utils.promiseOrCallback(callback, cb => {
-            this._request(method, params, (err, result) => {
-                if (err) {
-                    return cb(err);
-                }
-                return cb(null, result);
-            });
-        });
+  getStoremanGroupQuota(chainType, groupId, symbol, targetChainType, callback) {
+    if (callback) {
+      callback = utils.wrapCallback(callback);
     }
+    let method = "getStoremanGroupQuota";
+    let params = { chainType, groupId, symbol, targetChainType };
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
+      });
+    });
+  }
 
   /**
    *
@@ -7235,10 +7322,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanGroupInfo';
-    let params = {"groupId": groupId};
+    let method = "getStoremanGroupInfo";
+    let params = { groupId: groupId };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7301,10 +7388,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanGroupConfig';
-    let params = {"groupId": groupId};
+    let method = "getStoremanGroupConfig";
+    let params = { groupId: groupId };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7314,7 +7401,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanInfo
    * @apiGroup CrossChain
@@ -7368,10 +7455,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanInfo';
-    let params = {wkAddr: wkAddr};
+    let method = "getStoremanInfo";
+    let params = { wkAddr: wkAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7381,7 +7468,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getMultiStoremanInfo
    * @apiGroup CrossChain
@@ -7437,10 +7524,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getMultiStoremanInfo';
-    let params = {wkAddr: wkAddr};
+    let method = "getMultiStoremanInfo";
+    let params = { wkAddr: wkAddr };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7450,7 +7537,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanConf
    * @apiGroup CrossChain
@@ -7494,10 +7581,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanConf';
-    let params = {...options};
+    let method = "getStoremanConf";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7507,7 +7594,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanCandidates
    * @apiGroup CrossChain
@@ -7582,10 +7669,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanCandidates';
-    let params = {"groupId": groupId};
+    let method = "getStoremanCandidates";
+    let params = { groupId: groupId };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7595,7 +7682,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanGroupMember
    * @apiGroup CrossChain
@@ -7672,10 +7759,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanGroupMember';
-    let params = {"groupId": groupId};
+    let method = "getStoremanGroupMember";
+    let params = { groupId: groupId };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7685,7 +7772,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanStakeInfo
    * @apiGroup CrossChain
@@ -7745,20 +7832,20 @@ class ApiInstance extends WsInstance {
    */
 
   getStoremanStakeInfo(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanStakeInfo';
-    let params = {...options};
+    let method = "getStoremanStakeInfo";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7768,7 +7855,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanStakeTotalIncentive
    * @apiGroup CrossChain
@@ -7816,20 +7903,20 @@ class ApiInstance extends WsInstance {
    */
 
   getStoremanStakeTotalIncentive(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanStakeTotalIncentive';
-    let params = {...options};
+    let method = "getStoremanStakeTotalIncentive";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7839,7 +7926,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanDelegatorInfo
    * @apiGroup CrossChain
@@ -7900,20 +7987,20 @@ class ApiInstance extends WsInstance {
    */
 
   getStoremanDelegatorInfo(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanDelegatorInfo';
-    let params = {...options};
+    let method = "getStoremanDelegatorInfo";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7923,7 +8010,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanDelegatorTotalIncentive
    * @apiGroup CrossChain
@@ -7971,20 +8058,20 @@ class ApiInstance extends WsInstance {
    */
 
   getStoremanDelegatorTotalIncentive(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanDelegatorTotalIncentive';
-    let params = {...options};
+    let method = "getStoremanDelegatorTotalIncentive";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -7994,7 +8081,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanGpkSlashInfo
    * @apiGroup CrossChain
@@ -8063,20 +8150,20 @@ class ApiInstance extends WsInstance {
    */
 
   getStoremanGpkSlashInfo(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanGpkSlashInfo';
-    let params = {...options};
+    let method = "getStoremanGpkSlashInfo";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8086,7 +8173,7 @@ class ApiInstance extends WsInstance {
     });
   }
 
-    /**
+  /**
    *
    * @apiName getStoremanSignSlashInfo
    * @apiGroup CrossChain
@@ -8134,20 +8221,20 @@ class ApiInstance extends WsInstance {
    */
 
   getStoremanSignSlashInfo(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getStoremanSignSlashInfo';
-    let params = {...options};
+    let method = "getStoremanSignSlashInfo";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8269,20 +8356,20 @@ class ApiInstance extends WsInstance {
    *
    */
   getTokenPairs(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenPairs';
-    let params = {...options};
+    let method = "getTokenPairs";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8339,10 +8426,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenPairInfo';
-    let params = {"id": id};
+    let method = "getTokenPairInfo";
+    let params = { id: id };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8399,10 +8486,10 @@ class ApiInstance extends WsInstance {
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenPairAncestorInfo';
-    let params = {"id": id};
+    let method = "getTokenPairAncestorInfo";
+    let params = { id: id };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8431,16 +8518,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getTokenPairIDs","params":{{chainIds: [2147483708, 2153201998]}},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getTokenPairIDs({chainIds: [2147483708, 2153201998]}, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getTokenPairIDs({chainIds: [2147483708, 2153201998]});
    *   console.log("Result is ", result);
@@ -8451,20 +8538,20 @@ class ApiInstance extends WsInstance {
    *
    */
   getTokenPairIDs(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
+    if (!options || typeof options !== "object") {
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenPairIDs';
-    let params = {...options};
+    let method = "getTokenPairIDs";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8495,16 +8582,16 @@ class ApiInstance extends WsInstance {
    * @apiParamExample {string} JSON-RPC over websocket
    * {"jsonrpc":"2.0","method":"getChainConstantInfo","params":{"chainId":"2153201998"},"id":1}
    *
-  * @apiExample {nodejs} Example callback usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example callback usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   apiTest.getChainConstantInfo({"chainId":"2153201998"}, (err, result) => {
    *     console.log("Result is ", result);
    *     apiTest.close();
    *   });
    *
-  * @apiExample {nodejs} Example promise usage:
-  *   const ApiInstance = require('iwan-sdk');
+   * @apiExample {nodejs} Example promise usage:
+   *   const ApiInstance = require('iwan-sdk');
    *   let apiTest = new ApiInstance(YOUR-API-KEY, YOUR-SECRET-KEY);
    *   let result = await apiTest.getChainConstantInfo({"chainId":"2153201998"});
    *   console.log("Result is ", result);
@@ -8520,20 +8607,20 @@ class ApiInstance extends WsInstance {
    *
    */
   getChainConstantInfo(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
-    if (!options || typeof(options) !== "object") {
-      options = {}
+    if (!options || typeof options !== "object") {
+      options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getChainConstantInfo';
-    let params = {...options};
+    let method = "getChainConstantInfo";
+    let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8541,162 +8628,175 @@ class ApiInstance extends WsInstance {
         return cb(null, result);
       });
     });
-    }
+  }
 
-    isConnetionOpen() {
-        return this.open;
-    }
+  isConnetionOpen() {
+    return this.open;
+  }
 
-    estimateNetworkFee(chainType, feeType, toChainType, callback) {
-        let method = 'estimateNetworkFee';
-        let params = {
-            "chainType": chainType,
-            "feeType": feeType,
-            "toChainType": toChainType
-        };
+  estimateNetworkFee(chainType, feeType, toChainType, callback) {
+    let method = "estimateNetworkFee";
+    let params = {
+      chainType: chainType,
+      feeType: feeType,
+      toChainType: toChainType,
+    };
 
-        return utils.promiseOrCallback(callback, cb => {
-            this._request(method, params, (err, result) => {
-                if (err) {
-                    return cb(err);
-                }
-                return cb(null, result);
-            });
-        });
-    }
-
-    getCrossChainFees(chainType, chainIds, callback) {
-        let method = 'getCrossChainFees';
-        let params = {
-            "chainType": chainType,
-            "chainIds": chainIds
-        };
-
-        return utils.promiseOrCallback(callback, cb => {
-            this._request(method, params, (err, result) => {
-                if (err) {
-                    return cb(err);
-                }
-                return cb(null, result);
-            });
-        });
-    }
-
-    getStoremanGroupConfig(storemanGroupId, callback) {
-      let method = 'getStoremanGroupConfig';
-      let params = {
-        "groupId": storemanGroupId
-      };
-
-      return utils.promiseOrCallback(callback, cb => {
-        this._request(method, params, (err, result) => {
-          if (err) {
-            return cb(err);
-          }
-          return cb(null, result);
-        });
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
       });
-    }
+    });
+  }
 
-    multiCall(chainType, calls, options, callback) {
-      if (typeof(options) === "function") {
-        callback = options;
-        options = {};
-      }
-      if (!options || typeof(options) !== "object") {
-        options = {};
-      }
-      if (callback) {
-        callback = utils.wrapCallback(callback);
-      }
-      let method = 'multiCall';
-      let params = {chainType: chainType, calls: calls, ...options};
+  getCrossChainFees(chainType, chainIds, callback) {
+    let method = "getCrossChainFees";
+    let params = {
+      chainType: chainType,
+      chainIds: chainIds,
+    };
 
-      return utils.promiseOrCallback(callback, cb => {
-        this._request(method, params, (err, result) => {
-          if (err) {
-            return cb(err);
-          }
-          return cb(null, result);
-        });
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
       });
-    }
+    });
+  }
 
-    getMinCrossChainAmount(crossChain, symbol, options, callback) {
-      if (typeof(options) === "function") {
-        callback = options;
-        options = {};
-      }
-      if (callback) {
-        callback = utils.wrapCallback(callback);
-      }
-      let method = 'getMinCrossChainAmount';
-      let params = { crossChain: crossChain, symbol: symbol, ...options };
+  getStoremanGroupConfig(storemanGroupId, callback) {
+    let method = "getStoremanGroupConfig";
+    let params = {
+      groupId: storemanGroupId,
+    };
 
-      return utils.promiseOrCallback(callback, cb => {
-        this._request(method, params, (err, result) => {
-          if (err) {
-            return cb(err);
-          }
-          return cb(null, result);
-        });
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
       });
+    });
+  }
+
+  multiCall(chainType, calls, options, callback) {
+    if (typeof options === "function") {
+      callback = options;
+      options = {};
     }
-
-    estimateCrossChainOperationFee(chainType, targetChainType, options, callback) {
-      if (typeof(options) === "function") {
-        callback = options;
-        options = {};
-      }
-      if (callback) {
-        callback = utils.wrapCallback(callback);
-      }
-      let method = 'estimateCrossChainOperationFee';
-      let params = { chainType: chainType, targetChainType: targetChainType, ...options };
-    
-      return utils.promiseOrCallback(callback, cb => {
-        this._request(method, params, (err, result) => {
-          if (err) {
-            return cb(err);
-          }
-          return cb(null, result);
-        });
-      });
+    if (!options || typeof options !== "object") {
+      options = {};
     }
+    if (callback) {
+      callback = utils.wrapCallback(callback);
+    }
+    let method = "multiCall";
+    let params = { chainType: chainType, calls: calls, ...options };
 
-    estimateCrossChainNetworkFee(chainType, targetChainType, options, callback) {
-      if (typeof(options) === "function") {
-        callback = options;
-        options = {};
-      }
-      if (callback) {
-        callback = utils.wrapCallback(callback);
-      }
-      let method = 'estimateCrossChainNetworkFee';
-      let params = { chainType: chainType, targetChainType: targetChainType, ...options };
-    
-      return utils.promiseOrCallback(callback, cb => {
-        this._request(method, params, (err, result) => {
-          if (err) {
-            return cb(err);
-          }
-          return cb(null, result);
-        });
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
       });
-   }
+    });
+  }
 
-   getLatestBlock(chainType, options, callback) {
-    if (typeof(options) === "function") {
+  getMinCrossChainAmount(crossChain, symbol, options, callback) {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getLatestBlock';
+    let method = "getMinCrossChainAmount";
+    let params = { crossChain: crossChain, symbol: symbol, ...options };
+
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
+      });
+    });
+  }
+
+  estimateCrossChainOperationFee(
+    chainType,
+    targetChainType,
+    options,
+    callback
+  ) {
+    if (typeof options === "function") {
+      callback = options;
+      options = {};
+    }
+    if (callback) {
+      callback = utils.wrapCallback(callback);
+    }
+    let method = "estimateCrossChainOperationFee";
+    let params = {
+      chainType: chainType,
+      targetChainType: targetChainType,
+      ...options,
+    };
+
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
+      });
+    });
+  }
+
+  estimateCrossChainNetworkFee(chainType, targetChainType, options, callback) {
+    if (typeof options === "function") {
+      callback = options;
+      options = {};
+    }
+    if (callback) {
+      callback = utils.wrapCallback(callback);
+    }
+    let method = "estimateCrossChainNetworkFee";
+    let params = {
+      chainType: chainType,
+      targetChainType: targetChainType,
+      ...options,
+    };
+
+    return utils.promiseOrCallback(callback, (cb) => {
+      this._request(method, params, (err, result) => {
+        if (err) {
+          return cb(err);
+        }
+        return cb(null, result);
+      });
+    });
+  }
+
+  getLatestBlock(chainType, options, callback) {
+    if (typeof options === "function") {
+      callback = options;
+      options = {};
+    }
+    if (callback) {
+      callback = utils.wrapCallback(callback);
+    }
+    let method = "getLatestBlock";
     let params = { chainType: chainType, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8707,17 +8807,17 @@ class ApiInstance extends WsInstance {
   }
 
   getEpochParameters(chainType, options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getEpochParameters';
+    let method = "getEpochParameters";
     let params = { chainType: chainType, ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8728,17 +8828,17 @@ class ApiInstance extends WsInstance {
   }
 
   getTokenPairsHash(options, callback) {
-    if (typeof(options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
     if (callback) {
       callback = utils.wrapCallback(callback);
     }
-    let method = 'getTokenPairsHash';
+    let method = "getTokenPairsHash";
     let params = { ...options };
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8749,10 +8849,10 @@ class ApiInstance extends WsInstance {
   }
 
   getRegisteredChainLogo(options, callback) {
-    let method = 'getRegisteredChainLogo';
+    let method = "getRegisteredChainLogo";
     let params = {};
 
-    if (typeof (options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
@@ -8761,7 +8861,7 @@ class ApiInstance extends WsInstance {
     }
     params = utils.newJson(options);
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);
@@ -8772,10 +8872,10 @@ class ApiInstance extends WsInstance {
   }
 
   getRegisteredMultiChainOrigToken(options, callback) {
-    let method = 'getRegisteredMultiChainOrigToken';
+    let method = "getRegisteredMultiChainOrigToken";
     let params = {};
 
-    if (typeof (options) === "function") {
+    if (typeof options === "function") {
       callback = options;
       options = {};
     }
@@ -8784,7 +8884,7 @@ class ApiInstance extends WsInstance {
     }
     params = utils.newJson(options);
 
-    return utils.promiseOrCallback(callback, cb => {
+    return utils.promiseOrCallback(callback, (cb) => {
       this._request(method, params, (err, result) => {
         if (err) {
           return cb(err);

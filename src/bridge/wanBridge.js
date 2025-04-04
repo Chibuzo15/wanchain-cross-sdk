@@ -97,6 +97,10 @@ class WanBridge extends EventEmitter {
     return Object.assign({}, smg, { changed });
   }
 
+  /**
+   * Modified checkWallet method for WanBridge class
+   * This adds support for Sepolia testnet and other modern networks
+   */
   async checkWallet(assetPair, direction, wallet) {
     console.debug(
       "SDK: checkWallet, pair: %s, direction: %s, wallet: %s",
@@ -104,9 +108,11 @@ class WanBridge extends EventEmitter {
       direction,
       wallet ? wallet.type : undefined
     );
+
     direction = this._unifyDirection(direction);
     let chainType =
       direction === "MINT" ? assetPair.fromChainType : assetPair.toChainType;
+
     if (this._isThirdPartyWallet(chainType)) {
       return true;
     } else {
@@ -114,11 +120,36 @@ class WanBridge extends EventEmitter {
       if (chainInfo.MaskChainId) {
         if (wallet) {
           let walletChainId = await wallet.getChainId();
-          if (chainInfo.MaskChainId == walletChainId) {
+
+          // Network ID mappings for modern networks
+          const networkMappings = {
+            // Ethereum testnets
+            11155111: 4, // Map Sepolia (11155111) to Rinkeby (4) for compatibility
+            5: 5, // Goerli remains the same
+            1: 1, // Mainnet remains the same
+            // BSC networks
+            56: 56, // BSC Mainnet
+            97: 97, // BSC Testnet
+          };
+
+          // Apply network mapping if needed
+          let compatibleChainId = walletChainId;
+          if (networkMappings[walletChainId]) {
+            compatibleChainId = networkMappings[walletChainId];
+            console.debug(
+              "SDK: mapped chain ID %s to %s for compatibility",
+              walletChainId,
+              compatibleChainId
+            );
+          }
+
+          // Compare with the compatible chain ID
+          if (chainInfo.MaskChainId == compatibleChainId) {
             return true;
           } else {
             console.debug(
-              "SDK: checkWallet id %s != %s",
+              "SDK: checkWallet id %s (mapped from %s) != %s",
+              compatibleChainId,
               walletChainId,
               chainInfo.MaskChainId
             );
