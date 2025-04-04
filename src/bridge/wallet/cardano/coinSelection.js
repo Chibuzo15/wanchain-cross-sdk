@@ -1,4 +1,15 @@
-const wasm = require("@emurgo/cardano-serialization-lib-asmjs");
+// const wasm = require("@emurgo/cardano-serialization-lib-asmjs");
+
+// Replace line 1 (if it exists)
+let wasm;
+try {
+  wasm = require("@emurgo/cardano-serialization-lib-asmjs");
+} catch (e) {
+  console.log(
+    "Cardano library not available in coinSelection.js - Cardano functionality will be disabled"
+  );
+  wasm = require("../../../utils/cardano-mock.js");
+}
 
 /**
  * BerryPool implementation of the __Random-Improve__ coin selection algorithm.
@@ -221,7 +232,7 @@ const CoinSelection = {
   randomImprove: async (inputs, outputs, limit) => {
     if (!protocolParameters)
       throw new Error(
-        'Protocol parameters not set. Use setProtocolParameters().'
+        "Protocol parameters not set. Use setProtocolParameters()."
       );
 
     /** @type {UTxOSelection} */
@@ -251,14 +262,10 @@ const CoinSelection = {
       createSubSet(utxoSelection, splitOutputsAmounts[i]); // Narrow down for NatToken UTxO
 
       let range = {};
-      range.ideal = wasm.Value.new(
-        wasm.BigNum.from_str('0')
-      )
+      range.ideal = wasm.Value.new(wasm.BigNum.from_str("0"))
         .checked_add(splitOutputsAmounts[i])
         .checked_add(splitOutputsAmounts[i]);
-      range.maximum = wasm.Value.new(
-        wasm.BigNum.from_str('0')
-      )
+      range.maximum = wasm.Value.new(wasm.BigNum.from_str("0"))
         .checked_add(range.ideal)
         .checked_add(splitOutputsAmounts[i]);
 
@@ -322,7 +329,7 @@ function select(utxoSelection, outputAmount, limit) {
       limit - utxoSelection.selection.length
     );
   } catch (e) {
-    if (e.message === 'INPUT_LIMIT_EXCEEDED') {
+    if (e.message === "INPUT_LIMIT_EXCEEDED") {
       // Limit reached : Fallback on DescOrdAlgo
       utxoSelection = descSelect(utxoSelection, outputAmount);
     } else {
@@ -355,11 +362,11 @@ function randomSelect(utxoSelection, outputAmount, limit) {
   }
 
   if (limit <= 0) {
-    throw new Error('INPUT_LIMIT_EXCEEDED');
+    throw new Error("INPUT_LIMIT_EXCEEDED");
   }
 
   if (nbFreeUTxO <= 0) {
-    throw new Error('INPUTS_EXHAUSTED');
+    throw new Error("INPUTS_EXHAUSTED");
   }
 
   /** @type {TransactionUnspentOutput} utxo */
@@ -394,7 +401,7 @@ function descSelect(utxoSelection, outputAmount) {
 
   do {
     if (utxoSelection.subset.length <= 0) {
-      throw new Error('INPUTS_EXHAUSTED');
+      throw new Error("INPUTS_EXHAUSTED");
     }
 
     /** @type {TransactionUnspentOutput} utxo */
@@ -453,9 +460,7 @@ function improve(utxoSelection, outputAmount, limit, range) {
     .splice(Math.floor(Math.random() * nbFreeUTxO), 1)
     .pop();
 
-  const newAmount = wasm.Value.new(
-    wasm.BigNum.from_str('0')
-  )
+  const newAmount = wasm.Value.new(wasm.BigNum.from_str("0"))
     .checked_add(utxo.output().amount())
     .checked_add(outputAmount);
 
@@ -483,9 +488,7 @@ function improve(utxoSelection, outputAmount, limit, range) {
  * @return {Value} - The compiled set of amounts requested for payment.
  */
 function mergeOutputsAmounts(outputs) {
-  let compiledAmountList = wasm.Value.new(
-    wasm.BigNum.from_str('0')
-  );
+  let compiledAmountList = wasm.Value.new(wasm.BigNum.from_str("0"));
 
   for (let i = 0; i < outputs.len(); i++) {
     compiledAmountList = addAmounts(
@@ -527,9 +530,7 @@ function splitAmounts(amounts) {
 
         _assets.insert(
           wasm.AssetName.from_bytes(assetName.to_bytes()),
-          wasm.BigNum.from_bytes(
-            mA.get(scriptHash).get(assetName).to_bytes()
-          )
+          wasm.BigNum.from_bytes(mA.get(scriptHash).get(assetName).to_bytes())
         );
 
         let _multiasset = wasm.MultiAsset.new();
@@ -537,9 +538,7 @@ function splitAmounts(amounts) {
           wasm.ScriptHash.from_bytes(scriptHash.to_bytes()),
           _assets
         );
-        let _value = wasm.Value.new(
-          wasm.BigNum.from_str('0')
-        );
+        let _value = wasm.Value.new(wasm.BigNum.from_str("0"));
         _value.set_multiasset(_multiasset);
 
         splitAmounts.push(_value);
@@ -548,13 +547,11 @@ function splitAmounts(amounts) {
   }
 
   // Order assets by qty DESC
-  splitAmounts = sortAmountList(splitAmounts, 'DESC');
+  splitAmounts = sortAmountList(splitAmounts, "DESC");
 
   // Insure lovelace is last to account for min ada requirement
   splitAmounts.push(
-    wasm.Value.new(
-      wasm.BigNum.from_bytes(amounts.coin().to_bytes())
-    )
+    wasm.Value.new(wasm.BigNum.from_bytes(amounts.coin().to_bytes()))
   );
 
   return splitAmounts;
@@ -566,9 +563,9 @@ function splitAmounts(amounts) {
  * @param {string} [sortOrder=ASC] - Order
  * @return {AmountList} - The sorted AmountList
  */
-function sortAmountList(amountList, sortOrder = 'ASC') {
+function sortAmountList(amountList, sortOrder = "ASC") {
   return amountList.sort((a, b) => {
-    let sortInt = sortOrder === 'DESC' ? BigInt(-1) : BigInt(1);
+    let sortInt = sortOrder === "DESC" ? BigInt(-1) : BigInt(1);
     return Number((getAmountValue(a) - getAmountValue(b)) * sortInt);
   });
 }
@@ -677,9 +674,7 @@ function isQtyFulfilled(outputAmount, cumulatedAmount, nbFreeUTxO) {
           BigInt(protocolParameters.maxTxSize) +
         BigInt(protocolParameters.minFeeB);
 
-      maxFee = wasm.Value.new(
-        wasm.BigNum.from_str(maxFee.toString())
-      );
+      maxFee = wasm.Value.new(wasm.BigNum.from_str(maxFee.toString()));
 
       amount = amount.checked_add(maxFee);
     }
@@ -765,7 +760,7 @@ function compare(group, candidate) {
  * @return {Value} - Initialized empty value
  */
 function createEmptyValue() {
-  const value = wasm.Value.new(wasm.BigNum.from_str('0'));
+  const value = wasm.Value.new(wasm.BigNum.from_str("0"));
   const multiasset = wasm.MultiAsset.new();
   value.set_multiasset(multiasset);
   return value;
